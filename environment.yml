@@ -1,0 +1,6 @@
+dependencies:
+  - rasterio=1.1.0
+  - geopandas=0.8.1
+  - pip
+  - pip:
+      - citycatio==0.3.1
