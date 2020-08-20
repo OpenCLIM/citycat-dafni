@@ -1,0 +1,23 @@
+kind: Model
+apiVersion: v1alpha3
+metadata:
+  displayName: CityCAT
+  name: citycat
+  summary: CityCAT is a tool for modelling, analysis and visualisation of surface water flooding.
+  description: >
+    CityCAT (City Catchment Analysis Tool) is a unique software tool for modelling, analysis and visualisation of
+    surface water flooding. CityCAT enables rapid assessment of combined pluvial and fluvial flood risk and allows
+    assessment of the effects of different flood alleviation measures.
+spec:
+  inputs:
+    env:
+      - name: RAIN
+        title: Rainfall Total (mm)
+        desc: The year at which the Model execution should stop.
+        type: number
+        default: 40
+        min: 10
+        max: 100
+    datasets:
+      - name: 316a1208-1e88-4995-a985-6a785b924316
+        path: inputs/dem
