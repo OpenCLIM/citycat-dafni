@@ -2,6 +2,7 @@ kind: Model
 apiVersion: v1alpha3
 metadata:
   displayName: CityCAT
+  type: Modelling
   name: citycat
   summary: CityCAT is a tool for modelling, analysis and visualisation of surface water flooding.
   description: >
@@ -13,11 +14,12 @@ spec:
     env:
       - name: RAIN
         title: Rainfall Total (mm)
-        desc: The year at which the Model execution should stop.
+        desc: The total amount of rainfall in one hour
         type: number
         default: 40
         min: 10
         max: 100
     datasets:
-      - name: 316a1208-1e88-4995-a985-6a785b924316
+      - uid: a11b62ac-e3bf-4989-87da-7da7dfa21de0
+        versionUid: 0cec1aef-fe49-4c7d-9048-76caa7cb576d
         path: inputs/dem
