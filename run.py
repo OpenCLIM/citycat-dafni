@@ -7,7 +7,7 @@ import pandas as pd
 import shutil
 import subprocess
 
-rainfall_total = os.getenv('RAIN', 40)
+rainfall_total = float(os.getenv('RAIN', 40))
 
 dem_path = os.getenv('DEM', '/data/inputs/dem')
 
