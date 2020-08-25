@@ -18,7 +18,7 @@ size = 500
 
 array, transform = merge(dem_datasets, bounds=(xmin, ymin, xmin+size, ymin+size))
 
-run_path = 'run'
+run_path = '/data/outputs/run'
 
 if not os.path.exists(run_path):
     os.mkdir(run_path)
@@ -33,8 +33,10 @@ dem.seek(0)
 
 model = Model(dem=dem, rainfall=pd.DataFrame([rainfall_total / 3600 / 1000] * 2), duration=3600, output_interval=600)
 
-model.write('run')
+model.write(run_path)
 
-shutil.copy('citycat.exe', 'run')
+shutil.copy('citycat.exe', run_path)
 
-subprocess.call('cd run && wine64 citycat.exe -r 1 -c 1', shell=True)
+subprocess.call('cd {run_path} && wine64 citycat.exe -r 1 -c 1'.format(run_path=run_path), shell=True)
+
+os.remove(os.path.join(run_path, 'citycat.exe'))
