@@ -1,10 +1,10 @@
 import os
+import shutil
 from rasterio.merge import merge
 import rasterio as rio
 from rasterio.io import MemoryFile
 from citycatio import Model
 import pandas as pd
-import shutil
 import subprocess
 
 rainfall_total = float(os.getenv('RAIN', 40))
@@ -14,7 +14,7 @@ dem_path = os.getenv('DEM', '/data/inputs/dem')
 dem_datasets = [rio.open(os.path.join(dem_path, p)) for p in os.listdir(dem_path) if p.endswith('.asc')]
 
 xmin, ymin = 420000, 560000
-size = 500
+size = 20
 
 array, transform = merge(dem_datasets, bounds=(xmin, ymin, xmin+size, ymin+size))
 
@@ -40,3 +40,7 @@ shutil.copy('citycat.exe', run_path)
 subprocess.call('cd {run_path} && wine64 citycat.exe -r 1 -c 1'.format(run_path=run_path), shell=True)
 
 os.remove(os.path.join(run_path, 'citycat.exe'))
+
+surface_maps = os.path.join(run_path, 'R1C1_SurfaceMaps')
+
+shutil.make_archive(surface_maps, 'zip', surface_maps)
