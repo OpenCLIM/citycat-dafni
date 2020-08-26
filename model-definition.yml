@@ -19,6 +19,15 @@ spec:
         default: 40
         min: 10
         max: 100
+
+      - name: SIZE
+        title: Domain Size (m)
+        desc: The width and height of the domain to create
+        type: integer
+        default: 20
+        min: 20
+        max: 10000
+
     datasets:
       - uid: a11b62ac-e3bf-4989-87da-7da7dfa21de0
         versionUid: 0cec1aef-fe49-4c7d-9048-76caa7cb576d

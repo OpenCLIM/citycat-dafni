@@ -1,5 +1,5 @@
 import os
-import shutil
+import shutil  # must be imported before GDAL
 from rasterio.merge import merge
 import rasterio as rio
 from rasterio.io import MemoryFile
@@ -11,10 +11,11 @@ rainfall_total = float(os.getenv('RAIN', 40))
 
 dem_path = os.getenv('DEM', '/data/inputs/dem')
 
+size = int(os.getenv('SIZE', '20'))
+
 dem_datasets = [rio.open(os.path.join(dem_path, p)) for p in os.listdir(dem_path) if p.endswith('.asc')]
 
 xmin, ymin = 420000, 560000
-size = 20
 
 array, transform = merge(dem_datasets, bounds=(xmin, ymin, xmin+size, ymin+size))
 
