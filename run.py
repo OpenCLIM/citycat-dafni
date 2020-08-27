@@ -6,6 +6,7 @@ from rasterio.io import MemoryFile
 from citycatio import Model
 import pandas as pd
 import subprocess
+import json
 
 rainfall_total = float(os.getenv('RAIN', 40))
 
@@ -45,3 +46,93 @@ os.remove(os.path.join(run_path, 'citycat.exe'))
 surface_maps = os.path.join(run_path, 'R1C1_SurfaceMaps')
 
 shutil.make_archive(surface_maps, 'zip', surface_maps)
+
+metadata = {
+   "@context": [
+      "metadata-v1"
+   ],
+   "@type": "dcat:Dataset",
+   "dct:title": f"CityCAT Output {rainfall_total}mm rainfall {size}m domain",
+   "dct:description": f"CityCAT Output {rainfall_total}mm rainfall {size}m domain",
+   "dct:identifier": [
+   ],
+   "dct:subject": "Environment",
+   "dcat:theme": [
+
+   ],
+   "dct:language": "en",
+   "dcat:keyword": [
+      "CityCAT", "Flooding", "Newcastle"
+   ],
+   "dct:conformsTo": {
+      "@id": None,
+      "@type": "dct:Standard",
+      "label": None
+   },
+   "dct:spatial": {
+      "@id": 2641673,
+      "@type": "dct:Location",
+      "rdfs:label": "Newcastle upon Tyne, United Kingdom"
+   },
+   "geojson": {
+      "type": "Feature",
+      "properties": {
+
+      },
+      "geometry": {
+         "type": "Polygon",
+         "coordinates": [
+            [
+               [
+                  -1.534381542200191,
+                  55.03117248153787
+               ],
+               [
+                  -1.7312260677551188,
+                  55.03117248153787
+               ],
+               [
+                  -1.7312260677551188,
+                  54.960169178330425
+               ],
+               [
+                  -1.534381542200191,
+                  54.960169178330425
+               ],
+               [
+                  -1.534381542200191,
+                  55.03117248153787
+               ]
+            ]
+         ]
+      }
+   },
+   "dct:PeriodOfTime": {
+      "type": "dct:PeriodOfTime",
+      "time:hasBeginning": None,
+      "time:hasEnd": None
+   },
+   "dct:accrualPeriodicity": None,
+   "dct:creator": [],
+   "dct:publisher": {
+      "@id": None,
+      "@type": "foaf:Organization",
+      "foaf:name": None,
+      "internalID": None
+   },
+   "dcat:contactPoint": {
+      "@type": "vcard:Organization",
+      "vcard:fn": "Fergus McClean",
+      "vcard:hasEmail": "fergus.mcclean@newcastle.ac.uk"
+   },
+   "dct:license": {
+      "@type": "LicenseDocument",
+      "@id": "https://creativecommons.org/licences/by/4.0/",
+      "rdfs:label": None
+   },
+   "dct:rights": None,
+   "dafni_version_note": "created output",
+}
+
+with open('/data/outputs/metadata.json', 'w') as f:
+    json.dump(metadata, f, indent=4)
