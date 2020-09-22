@@ -8,45 +8,43 @@ import pandas as pd
 import subprocess
 import json
 
+# Read environment variables
 rainfall_total = float(os.getenv('RAIN', 40))
-
-dem_path = os.getenv('DEM', '/data/inputs/dem')
-
 size = int(os.getenv('SIZE', '20'))
 
-dem_datasets = [rio.open(os.path.join(dem_path, p)) for p in os.listdir(dem_path) if p.endswith('.asc')]
-
-xmin, ymin = 420000, 560000
-
-array, transform = merge(dem_datasets, bounds=(xmin, ymin, xmin+size, ymin+size))
-
+# Create run directory
 run_path = '/data/outputs/run'
-
 if not os.path.exists(run_path):
     os.mkdir(run_path)
 
-dem = MemoryFile()
+# Read and clip DEM
+dem_path = '/data/inputs/dem'
+dem_datasets = [rio.open(os.path.join(dem_path, p)) for p in os.listdir(dem_path) if p.endswith('.asc')]
+xmin, ymin = 420000, 560000
+array, transform = merge(dem_datasets, bounds=(xmin, ymin, xmin + size, ymin + size))
+with MemoryFile() as dem:
+    with dem.open(driver='GTiff', transform=transform, width=array.shape[1], height=array.shape[2], count=1,
+                  dtype=rio.float32) as dataset:
+        dataset.write(array)
 
-with dem.open(driver='GTiff', transform=transform, width=array.shape[1], height=array.shape[2],
-              count=1, dtype=rio.float32) as dataset:
-    dataset.write(array)
+    # Create input files
+    Model(dem=dem, rainfall=pd.DataFrame([rainfall_total / 3600 / 1000] * 2), duration=3600,
+          output_interval=600).write(run_path)
 
-dem.seek(0)
-
-model = Model(dem=dem, rainfall=pd.DataFrame([rainfall_total / 3600 / 1000] * 2), duration=3600, output_interval=600)
-
-model.write(run_path)
-
+# Copy executable
 shutil.copy('citycat.exe', run_path)
 
+# Run executable
 subprocess.call('cd {run_path} && wine64 citycat.exe -r 1 -c 1'.format(run_path=run_path), shell=True)
 
+# Delete executable
 os.remove(os.path.join(run_path, 'citycat.exe'))
 
+# Archive results files
 surface_maps = os.path.join(run_path, 'R1C1_SurfaceMaps')
-
 shutil.make_archive(surface_maps, 'zip', surface_maps)
 
+# Create metadata file
 metadata = {
    "@context": [
       "metadata-v1"
