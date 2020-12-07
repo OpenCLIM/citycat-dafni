@@ -11,6 +11,8 @@ import xarray as xr
 from glob import glob
 from shapely.geometry import Point
 from lmoments3 import distr
+from shapely.geometry import box
+import geopandas as gpd
 import rioxarray as rx
 
 data_path = os.getenv('DATA_PATH', '/data')
@@ -56,11 +58,12 @@ array, transform = merge(dem_datasets, bounds=(xmin, ymin, xmax, ymax))
 with MemoryFile() as dem:
     with dem.open(driver='GTiff', transform=transform, width=array.shape[1], height=array.shape[2], count=1,
                   dtype=rio.float32) as dataset:
+        bounds = dataset.bounds
         dataset.write(array)
 
     # Create input files
     Model(dem=dem, rainfall=pd.DataFrame([rainfall_total / (3600*duration) / 1000] * 2), duration=3600*duration,
-          output_interval=600).write(run_path)
+          output_interval=600, open_boundaries=gpd.GeoDataFrame(geometry=[box(*bounds).buffer(100)])).write(run_path)
 
 # Copy executable
 shutil.copy('citycat.exe', run_path)

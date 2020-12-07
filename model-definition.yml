@@ -1,7 +1,7 @@
 kind: Model
 apiVersion: v1alpha4
 metadata:
-  displayName: CityCAT v7
+  displayName: CityCAT v8
   type: Modelling
   name: citycat
   summary: CityCAT is a tool for modelling, analysis and visualisation of surface water flooding.
