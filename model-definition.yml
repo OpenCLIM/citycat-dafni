@@ -1,7 +1,7 @@
 kind: Model
 apiVersion: v1alpha3
 metadata:
-  displayName: CityCAT v6
+  displayName: CityCAT v7
   type: Modelling
   name: citycat
   summary: CityCAT is a tool for modelling, analysis and visualisation of surface water flooding.
@@ -12,26 +12,71 @@ metadata:
 spec:
   inputs:
     env:
-      - name: RAIN
-        title: Rainfall Total (mm)
-        desc: The total amount of rainfall in one hour
+      - name: RETURN_PERIOD
+        title: Return Period (years)
+        desc: The return period of the rainfall event
         type: number
-        default: 40
+        default: 100
         min: 10
-        max: 100
+        max: 200
+
+      - name: DURATION
+        title: Duration (hours)
+        desc: The duration of the rainfall event
+        type: number
+        default: 1
+        min: 1
+        max: 6
 
       - name: SIZE
-        title: Domain Size (m)
+        title: Domain Size (km)
         desc: The width and height of the domain to create
-        type: integer
-        default: 20
-        min: 20
+        type: number
+        default: 5.5
+        min: 0.1
         max: 10000
 
-    datasets:
-      - uid: a11b62ac-e3bf-4989-87da-7da7dfa21de0
-        versionUid: 0cec1aef-fe49-4c7d-9048-76caa7cb576d
+      - name: X
+        title: Domain Centroid X (OSGB)
+        desc: The X coordinate of the domain centroid in OSGB
+        type: integer
+        default: 258722
+        min: 225379
+        max: 311599
+
+      - name: Y
+        title: Domain Centroid Y (OSGB)
+        desc: The Y coordinate of the domain centroid in OSGB
+        type: integer
+        default: 665028
+        min: 600201
+        max: 684815
+
+      - name: POOLING_RADIUS
+        title: Pooling radius (km)
+        desc: The threshold distance for selecting UKCP cells to pool
+        type: integer
+        default: 20
+        min: 10
+        max: 50
+
+    dataslots:
+      - name: Digital Elevation Model
+        description: Digital Elevation Model
+        default:
+          - uid: 692b8834-6939-4cec-8b56-4bda1483aec4
+            versionUid: 859e810c-4597-44b6-8d92-a9f00e45dcbd
         path: inputs/dem
+        required: true
+
+      - name: UKCP18
+        description: 5km Climate Data from UKCP18 in OSGB
+        default:
+          - uid: 05ed95c7-e339-4b9a-9bc8-bb9aad07bc33
+            versionUid: bb541d63-38d6-4fce-b431-29b50668df6b
+        path: inputs/ukcp
+        required: true
+
 
   outputs:
     datasets:

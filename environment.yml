@@ -1,6 +1,8 @@
 dependencies:
-  - rasterio=1.1.0
-  - geopandas=0.8.1
+  - rasterio
+  - geopandas
+  - xarray
   - pip
   - pip:
       - citycatio==0.3.2
+      - rioxarray==0.1.1

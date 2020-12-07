@@ -7,35 +7,67 @@ from citycatio import Model
 import pandas as pd
 import subprocess
 import json
+import xarray as xr
+from glob import glob
+from shapely.geometry import Point
+import rioxarray as rx
+
+data_path = os.getenv('DATA_PATH', '/data')
+inputs_path = os.path.join(data_path, 'inputs')
+outputs_path = os.path.join(data_path, 'outputs')
 
 # Read environment variables
-rainfall_total = float(os.getenv('RAIN', 40))
-size = int(os.getenv('SIZE', '20'))
+size = float(os.getenv('SIZE')) * 1000  # convert from km to m
+duration = int(os.getenv('DURATION'))
+return_period = int(os.getenv('RETURN_PERIOD'))
+x = int(os.getenv('X'))
+y = int(os.getenv('Y'))
+pooling_radius = int(os.getenv('POOLING_RADIUS')) * 1000  # convert from km to m
+
+# Get rainfall total
+rainfall = xr.open_dataset(glob(os.path.join(inputs_path, 'ukcp/pr*'))[0]).pr.rio.set_crs('EPSG:27700')
+
+df = rainfall.rio.clip([Point(x, y).buffer(pooling_radius)]).to_dataframe().pr.dropna().reset_index()
+
+rolling = df.set_index('time').groupby(
+   ['projection_x_coordinate', 'projection_y_coordinate']).pr.rolling(duration).sum().reset_index()
+
+years = [t.year for t in rolling.time.values]
+
+amax = rolling.groupby(['projection_x_coordinate', 'projection_y_coordinate', years]).pr.max().reset_index(drop=True)
+
+times_exceeded = int(round(len(amax) / return_period, 0))
+
+rainfall_total = amax.sort_values(ascending=False).iloc[times_exceeded]
+print(f'Rainfall Total:{rainfall_total}')
 
 # Create run directory
-run_path = '/data/outputs/run'
+run_path = os.path.join(outputs_path, 'run')
 if not os.path.exists(run_path):
     os.mkdir(run_path)
 
 # Read and clip DEM
-dem_path = '/data/inputs/dem'
+dem_path = os.path.join(inputs_path, 'dem')
 dem_datasets = [rio.open(os.path.join(dem_path, p)) for p in os.listdir(dem_path) if p.endswith('.asc')]
-xmin, ymin = 420000, 560000
-array, transform = merge(dem_datasets, bounds=(xmin, ymin, xmin + size, ymin + size))
+xmin, ymin, xmax, ymax = x-size/2, y-size/2, x+size/2, y+size/2
+array, transform = merge(dem_datasets, bounds=(xmin, ymin, xmax, ymax))
 with MemoryFile() as dem:
     with dem.open(driver='GTiff', transform=transform, width=array.shape[1], height=array.shape[2], count=1,
                   dtype=rio.float32) as dataset:
         dataset.write(array)
 
     # Create input files
-    Model(dem=dem, rainfall=pd.DataFrame([rainfall_total / 3600 / 1000] * 2), duration=3600,
+    Model(dem=dem, rainfall=pd.DataFrame([rainfall_total / (3600*duration) / 1000] * 2), duration=3600*duration,
           output_interval=600).write(run_path)
 
 # Copy executable
 shutil.copy('citycat.exe', run_path)
 
 # Run executable
-subprocess.call('cd {run_path} && wine64 citycat.exe -r 1 -c 1'.format(run_path=run_path), shell=True)
+if os.name == 'nt':
+   subprocess.call('cd {run_path} & citycat.exe -r 1 -c 1'.format(run_path=run_path), shell=True)
+else:
+   subprocess.call('cd {run_path} && wine64 citycat.exe -r 1 -c 1'.format(run_path=run_path), shell=True)
 
 # Delete executable
 os.remove(os.path.join(run_path, 'citycat.exe'))
@@ -50,8 +82,8 @@ metadata = {
       "metadata-v1"
    ],
    "@type": "dcat:Dataset",
-   "dct:title": f"CityCAT Output {rainfall_total}mm rainfall {size}m domain",
-   "dct:description": f"CityCAT Output {rainfall_total}mm rainfall {size}m domain",
+   "dct:title": f"CityCAT Output {return_period}yrs {duration}hr {size}km domain",
+   "dct:description": f"CityCAT Output {return_period}yrs {duration}hr {size}km domain",
    "dct:identifier": [
    ],
    "dct:subject": "Environment",
@@ -132,5 +164,5 @@ metadata = {
    "dafni_version_note": "created output",
 }
 
-with open('/data/outputs/metadata.json', 'w') as f:
+with open(os.path.join(outputs_path, 'metadata.json'), 'w') as f:
     json.dump(metadata, f, indent=4)
