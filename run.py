@@ -10,6 +10,7 @@ import json
 import xarray as xr
 from glob import glob
 from shapely.geometry import Point
+from lmoments3 import distr
 import rioxarray as rx
 
 data_path = os.getenv('DATA_PATH', '/data')
@@ -24,21 +25,22 @@ x = int(os.getenv('X'))
 y = int(os.getenv('Y'))
 pooling_radius = int(os.getenv('POOLING_RADIUS')) * 1000  # convert from km to m
 
-# Get rainfall total
+# Get rainfall values within pooling radius
 rainfall = xr.open_dataset(glob(os.path.join(inputs_path, 'ukcp/pr*'))[0]).pr.rio.set_crs('EPSG:27700')
-
 df = rainfall.rio.clip([Point(x, y).buffer(pooling_radius)]).to_dataframe().pr.dropna().reset_index()
 
+# Calculate rolling sum for duration
 rolling = df.set_index('time').groupby(
    ['projection_x_coordinate', 'projection_y_coordinate']).pr.rolling(duration).sum().reset_index()
 
-years = [t.year for t in rolling.time.values]
+# Get annual maxima
+amax = rolling.groupby(['projection_x_coordinate', 'projection_y_coordinate',
+                        [t.year for t in rolling.time.values]]).pr.max().reset_index(drop=True)
 
-amax = rolling.groupby(['projection_x_coordinate', 'projection_y_coordinate', years]).pr.max().reset_index(drop=True)
-
-times_exceeded = int(round(len(amax) / return_period, 0))
-
-rainfall_total = amax.sort_values(ascending=False).iloc[times_exceeded]
+# Fit GEV and find rainfall total
+params = distr.gev.lmom_fit(amax.values)
+fitted_gev = distr.gev(**params)
+rainfall_total = fitted_gev.ppf(return_period / len(amax))
 print(f'Rainfall Total:{rainfall_total}')
 
 # Create run directory
