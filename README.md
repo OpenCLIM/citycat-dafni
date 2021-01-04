@@ -1,7 +1,7 @@
 # CityCAT on DAFNI
 
 ## Features
-- Extract domain from OS Terrain 50
+- Extract domain from OS Terrain 5
 - Generate return period events from UKCP18
 - Create archive of results
 
