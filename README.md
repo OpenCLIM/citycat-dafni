@@ -1,5 +1,7 @@
 # CityCAT on DAFNI
 
+[![build](https://github.com/OpenCLIM/citycat-dafni/workflows/build/badge.svg)](https://github.com/OpenCLIM/citycat-dafni/actions)
+
 ## Features
 - Extract domain from OS Terrain 5
 - Generate return period events from UKCP18

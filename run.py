@@ -18,6 +18,8 @@ import rioxarray as rx
 data_path = os.getenv('DATA_PATH', '/data')
 inputs_path = os.path.join(data_path, 'inputs')
 outputs_path = os.path.join(data_path, 'outputs')
+if not os.path.exists(outputs_path):
+    os.mkdir(outputs_path)
 
 # Read environment variables
 size = float(os.getenv('SIZE')) * 1000  # convert from km to m
