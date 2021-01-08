@@ -12,7 +12,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: decrypt citycat
-        run: gpg --output citycat.exe --passphrase ${{ secrets.CITYCAT_PASSPHRASE }} --decrypt citycat.exe.gpg
+        run: gpg --batch --output citycat.exe --passphrase ${{ secrets.CITYCAT_PASSPHRASE }} --decrypt citycat.exe.gpg
 
       - name: build image
         run: docker build -t citycat-dafni .
