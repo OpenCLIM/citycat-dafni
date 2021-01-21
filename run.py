@@ -3,10 +3,9 @@ import shutil  # must be imported before GDAL
 from rasterio.merge import merge
 import rasterio as rio
 from rasterio.io import MemoryFile
-from citycatio import Model
+from citycatio import Model, output
 import pandas as pd
 import subprocess
-import json
 import xarray as xr
 from glob import glob
 from shapely.geometry import Point
@@ -14,6 +13,7 @@ from lmoments3 import distr
 from shapely.geometry import box
 import geopandas as gpd
 import rioxarray as rx
+from rasterio.crs import CRS
 
 data_path = os.getenv('DATA_PATH', '/data')
 inputs_path = os.path.join(data_path, 'inputs')
@@ -57,6 +57,13 @@ dem_path = os.path.join(inputs_path, 'dem')
 dem_datasets = [rio.open(os.path.join(dem_path, p)) for p in os.listdir(dem_path) if p.endswith('.asc')]
 xmin, ymin, xmax, ymax = x-size/2, y-size/2, x+size/2, y+size/2
 array, transform = merge(dem_datasets, bounds=(xmin, ymin, xmax, ymax))
+
+# Read buildings
+buildings = glob(os.path.join(inputs_path, 'buildings/*'))
+print(f'Files in buildings directory: {[os.path.basename(p) for p in buildings]}')
+buildings = gpd.read_file(buildings[0]) if len(buildings) > 0 else None
+
+
 with MemoryFile() as dem:
     with dem.open(driver='GTiff', transform=transform, width=array.shape[1], height=array.shape[2], count=1,
                   dtype=rio.float32) as dataset:
@@ -65,7 +72,8 @@ with MemoryFile() as dem:
 
     # Create input files
     Model(dem=dem, rainfall=pd.DataFrame([rainfall_total / (3600*duration) / 1000] * 2), duration=3600*duration,
-          output_interval=600, open_boundaries=gpd.GeoDataFrame(geometry=[box(*bounds).buffer(100)])).write(run_path)
+          output_interval=600, open_boundaries=gpd.GeoDataFrame(geometry=[box(*bounds).buffer(100)]),
+          buildings=buildings).write(run_path)
 
 # Copy executable
 shutil.copy('citycat.exe', run_path)
@@ -83,93 +91,6 @@ os.remove(os.path.join(run_path, 'citycat.exe'))
 surface_maps = os.path.join(run_path, 'R1C1_SurfaceMaps')
 shutil.make_archive(surface_maps, 'zip', surface_maps)
 
-# Create metadata file
-metadata = {
-   "@context": [
-      "metadata-v1"
-   ],
-   "@type": "dcat:Dataset",
-   "dct:title": f"CityCAT Output {return_period}yrs {duration}hr {size}km domain",
-   "dct:description": f"CityCAT Output {return_period}yrs {duration}hr {size}km domain",
-   "dct:identifier": [
-   ],
-   "dct:subject": "Environment",
-   "dcat:theme": [
-
-   ],
-   "dct:language": "en",
-   "dcat:keyword": [
-      "CityCAT", "Flooding", "Newcastle"
-   ],
-   "dct:conformsTo": {
-      "@id": None,
-      "@type": "dct:Standard",
-      "label": None
-   },
-   "dct:spatial": {
-      "@id": 2641673,
-      "@type": "dct:Location",
-      "rdfs:label": "Newcastle upon Tyne, United Kingdom"
-   },
-   "geojson": {
-      "type": "Feature",
-      "properties": {
-
-      },
-      "geometry": {
-         "type": "Polygon",
-         "coordinates": [
-            [
-               [
-                  -1.534381542200191,
-                  55.03117248153787
-               ],
-               [
-                  -1.7312260677551188,
-                  55.03117248153787
-               ],
-               [
-                  -1.7312260677551188,
-                  54.960169178330425
-               ],
-               [
-                  -1.534381542200191,
-                  54.960169178330425
-               ],
-               [
-                  -1.534381542200191,
-                  55.03117248153787
-               ]
-            ]
-         ]
-      }
-   },
-   "dct:PeriodOfTime": {
-      "type": "dct:PeriodOfTime",
-      "time:hasBeginning": None,
-      "time:hasEnd": None
-   },
-   "dct:accrualPeriodicity": None,
-   "dct:creator": [],
-   "dct:publisher": {
-      "@id": None,
-      "@type": "foaf:Organization",
-      "foaf:name": None,
-      "internalID": None
-   },
-   "dcat:contactPoint": {
-      "@type": "vcard:Organization",
-      "vcard:fn": "Fergus McClean",
-      "vcard:hasEmail": "fergus.mcclean@newcastle.ac.uk"
-   },
-   "dct:license": {
-      "@type": "LicenseDocument",
-      "@id": "https://creativecommons.org/licences/by/4.0/",
-      "rdfs:label": None
-   },
-   "dct:rights": None,
-   "dafni_version_note": "created output",
-}
-
-with open(os.path.join(outputs_path, 'metadata.json'), 'w') as f:
-    json.dump(metadata, f, indent=4)
+# Create geotiff
+output.to_geotiff(os.path.join(surface_maps, 'R1_C1_max_depth.csv'), os.path.join(run_path, 'max_depth.tif'),
+                  crs=CRS.from_epsg(27700))
