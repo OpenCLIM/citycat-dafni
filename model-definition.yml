@@ -1,9 +1,9 @@
 kind: Model
 apiVersion: v1alpha4
 metadata:
-  displayName: CityCAT v8
+  displayName: CityCAT (OpenCLIM)
   type: Modelling
-  name: citycat
+  name: citycat-openclim
   summary: CityCAT is a tool for modelling, analysis and visualisation of surface water flooding.
   description: >
     CityCAT (City Catchment Analysis Tool) is a unique software tool for modelling, analysis and visualisation of
