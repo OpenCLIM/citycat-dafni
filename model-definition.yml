@@ -80,8 +80,8 @@ spec:
       - name: Buildings
         description: Buildings
         default:
-          - uid: 05ed95c7-e339-4b9a-9bc8-bb9aad07bc33
-            versionUid: bb541d63-38d6-4fce-b431-29b50668df6b
+          - uid: c601eed8-1195-4a2b-9087-53ef81209d30
+            versionUid: e35fe6ce-c05f-467e-92fe-99c631a7e753
         path: inputs/buildings
         required: false
 
