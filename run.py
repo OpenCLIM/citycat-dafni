@@ -14,6 +14,9 @@ from shapely.geometry import box
 import geopandas as gpd
 import rioxarray as rx
 from rasterio.crs import CRS
+from rasterio.plot import show
+import matplotlib.pyplot as plt
+from matplotlib_scalebar.scalebar import ScaleBar
 
 data_path = os.getenv('DATA_PATH', '/data')
 inputs_path = os.path.join(data_path, 'inputs')
@@ -92,5 +95,18 @@ surface_maps = os.path.join(run_path, 'R1C1_SurfaceMaps')
 shutil.make_archive(surface_maps, 'zip', surface_maps)
 
 # Create geotiff
-output.to_geotiff(os.path.join(surface_maps, 'R1_C1_max_depth.csv'), os.path.join(run_path, 'max_depth.tif'),
+geotiff_path = os.path.join(run_path, 'max_depth.tif')
+output.to_geotiff(os.path.join(surface_maps, 'R1_C1_max_depth.csv'), geotiff_path,
                   crs=CRS.from_epsg(27700))
+
+# Create depth map
+with rio.open(geotiff_path) as ds:
+    f, ax = plt.subplots()
+    im = show(ds, ax=ax, cmap='Blues').get_images()[0]
+
+    ax.set_xticks([])
+    ax.set_yticks([])
+
+    ax.add_artist(ScaleBar(ds.transform[0]))
+    f.colorbar(im, label='Water Depth (m)')
+    f.savefig(os.path.join(run_path, 'max_depth.png'), dpi=200)
