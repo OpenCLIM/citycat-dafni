@@ -12,6 +12,9 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v2
 
+      - name: Decrypt CityCAT
+        run: gpg --batch --output citycat.exe --passphrase ${{ secrets.CITYCAT_PASSPHRASE }} --decrypt citycat.exe.gpg
+
       - name: Docker Build
         run: docker build -t citycat-dafni .
 
