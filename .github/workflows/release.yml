@@ -5,8 +5,8 @@ on:
     types: [published]
 
 jobs:
-  upload:
-    name: Publish UDM to DAFNI
+  release:
+    name: Upload to DAFNI
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
@@ -19,7 +19,7 @@ jobs:
         run: docker build -t citycat-dafni .
 
       - name: Compress docker image
-        run: docker save udm-dafni | gzip > udm-dafni.tar.gz
+        run: docker save citycat-dafni | gzip > citycat-dafni.tar.gz
 
       - name: Set tag as env
         run: echo "TAG=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
@@ -27,7 +27,7 @@ jobs:
       - name: Upload to DAFNI
         uses: dafnifacility/dafni-model-uploader@v1.4
         with:
-          definition-path: './model_definition.yaml'
+          definition-path: './model_definition.yml'
           image-path: './citycat-dafni.tar.gz'
           username: ${{ secrets.DAFNI_SERVICE_ACCOUNT_USERNAME }}
           password: ${{ secrets.DAFNI_SERVICE_ACCOUNT_PASSWORD }}
