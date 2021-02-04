@@ -4,9 +4,11 @@ RUN mkdir src
 
 WORKDIR src
 
+COPY winehq.key .
+
 RUN dpkg --add-architecture i386 \
     && apt update && apt-get install -y gnupg2 apt-transport-https ca-certificates \
-    && wget -nc https://dl.winehq.org/wine-builds/winehq.key | apt-key add winehq.key \
+    && cat winehq.key | apt-key add winehq.key \
     && echo "deb https://dl.winehq.org/wine-builds/debian/ stretch main" | tee -a /etc/apt/sources.list \
     && apt update && apt install -y --install-recommends winehq-stable
 
