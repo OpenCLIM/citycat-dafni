@@ -27,7 +27,7 @@ jobs:
       - name: Upload to DAFNI
         uses: dafnifacility/dafni-model-uploader@v1.4
         with:
-          definition-path: './model_definition.yml'
+          definition-path: './model-definition.yml'
           image-path: './citycat-dafni.tar.gz'
           username: ${{ secrets.DAFNI_SERVICE_ACCOUNT_USERNAME }}
           password: ${{ secrets.DAFNI_SERVICE_ACCOUNT_PASSWORD }}
