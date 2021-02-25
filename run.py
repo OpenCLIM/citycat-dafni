@@ -83,7 +83,7 @@ with MemoryFile() as dem:
         dataset.write(array)
 
     # Create input files
-    Model(dem=dem, rainfall=rainfall, duration=3600*duration,
+    Model(dem=dem, rainfall=rainfall, duration=3600*duration+3600*post_event_duration,
           output_interval=600, open_boundaries=gpd.GeoDataFrame(geometry=[box(*bounds).buffer(100)]),
           buildings=buildings).write(run_path)
 
