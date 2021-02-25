@@ -17,6 +17,7 @@ from rasterio.crs import CRS
 from rasterio.plot import show
 import matplotlib.pyplot as plt
 from matplotlib_scalebar.scalebar import ScaleBar
+from rasterio.fill import fillnodata
 
 data_path = os.getenv('DATA_PATH', '/data')
 inputs_path = os.path.join(data_path, 'inputs')
@@ -122,3 +123,6 @@ with rio.open(geotiff_path) as ds:
     ax.add_artist(ScaleBar(ds.transform[0]))
     f.colorbar(im, label='Water Depth (m)')
     f.savefig(os.path.join(run_path, 'max_depth.png'), dpi=200)
+
+    with rio.open(os.path.join(run_path, 'max_depth_interpolated.tif'), 'w', **ds.profile) as dst:
+        dst.write(fillnodata(ds.read(1), mask=ds.read_masks(1)), 1)
