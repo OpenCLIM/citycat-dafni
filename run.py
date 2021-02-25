@@ -66,14 +66,17 @@ if not os.path.exists(run_path):
 # Read and clip DEM
 dem_path = os.path.join(inputs_path, 'dem')
 dem_datasets = [rio.open(os.path.join(dem_path, p)) for p in os.listdir(dem_path) if p.endswith('.asc')]
-xmin, ymin, xmax, ymax = x-size/2, y-size/2, x+size/2, y+size/2
-array, transform = merge(dem_datasets, bounds=(xmin, ymin, xmax, ymax))
+bounds = x-size/2, y-size/2, x+size/2, y+size/2
+array, transform = merge(dem_datasets, bounds=bounds)
 
 # Read buildings
-buildings = glob(os.path.join(inputs_path, 'buildings/*.gpkg'))
-buildings.extend(glob(os.path.join(inputs_path, 'buildings/*.shp')))
-print(f'Files in buildings directory: {[os.path.basename(p) for p in buildings]}')
-buildings = gpd.read_file(buildings[0]) if len(buildings) > 0 else None
+building_paths = glob(os.path.join(inputs_path, 'buildings/*.gpkg'))
+building_paths.extend(glob(os.path.join(inputs_path, 'buildings/*.shp')))
+print(f'Files in buildings directory: {[os.path.basename(p) for p in building_paths]}')
+buildings = gpd.read_file(building_paths[0], bbox=bounds) if len(building_paths) > 0 else None
+if len(building_paths) > 1:
+    for building_path in building_paths[1:]:
+        buildings.append(gpd.read_file(building_path, bbox=bounds))
 
 
 with MemoryFile() as dem:
