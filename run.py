@@ -67,7 +67,8 @@ xmin, ymin, xmax, ymax = x-size/2, y-size/2, x+size/2, y+size/2
 array, transform = merge(dem_datasets, bounds=(xmin, ymin, xmax, ymax))
 
 # Read buildings
-buildings = glob(os.path.join(inputs_path, 'buildings/*'))
+buildings = glob(os.path.join(inputs_path, 'buildings/*.gpkg'))
+buildings.extend(glob(os.path.join(inputs_path, 'buildings/*.shp')))
 print(f'Files in buildings directory: {[os.path.basename(p) for p in buildings]}')
 buildings = gpd.read_file(buildings[0]) if len(buildings) > 0 else None
 
