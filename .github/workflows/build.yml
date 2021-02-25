@@ -18,7 +18,7 @@ jobs:
         run: docker build -t citycat-dafni .
 
       - name: test return period
-        run: docker run -v $PWD/data:/data --env PYTHONUNBUFFERED=1 --env RAINFALL_MODE=return_period --env SIZE=0.1 --env DURATION=1 --env TOTAL_DEPTH=40 --env RETURN_PERIOD=100 --env X=258722 --env Y=665028 --env POOLING_RADIUS=10 --name citycat-dafni-return-period citycat-dafni
+        run: docker run -v $PWD/data:/data --env PYTHONUNBUFFERED=1 --env RAINFALL_MODE=return_period --env SIZE=0.1 --env DURATION=1 --env POST_EVENT_DURATION=0 --env TOTAL_DEPTH=40 --env RETURN_PERIOD=100 --env X=258722 --env Y=665028 --env POOLING_RADIUS=10 --name citycat-dafni-return-period citycat-dafni
 
       - name: test total depth
-        run: docker run -v $PWD/data:/data --env PYTHONUNBUFFERED=1 --env RAINFALL_MODE=total_depth --env SIZE=0.1 --env DURATION=1 --env TOTAL_DEPTH=40 --env RETURN_PERIOD=100 --env X=258722 --env Y=665028 --env POOLING_RADIUS=10 --name citycat-dafni-total-depth citycat-dafni
+        run: docker run -v $PWD/data:/data --env PYTHONUNBUFFERED=1 --env RAINFALL_MODE=total_depth --env SIZE=0.1 --env DURATION=1 --env POST_EVENT_DURATION=0 --env TOTAL_DEPTH=40 --env RETURN_PERIOD=100 --env X=258722 --env Y=665028 --env POOLING_RADIUS=10 --name citycat-dafni-total-depth citycat-dafni

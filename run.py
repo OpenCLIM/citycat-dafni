@@ -29,6 +29,7 @@ rainfall_mode = os.getenv('RAINFALL_MODE')
 rainfall_total = int(os.getenv('TOTAL_DEPTH'))
 size = float(os.getenv('SIZE')) * 1000  # convert from km to m
 duration = int(os.getenv('DURATION'))
+post_event_duration = int(os.getenv('POST_EVENT_DURATION'))
 return_period = int(os.getenv('RETURN_PERIOD'))
 x = int(os.getenv('X'))
 y = int(os.getenv('Y'))
@@ -37,8 +38,8 @@ pooling_radius = int(os.getenv('POOLING_RADIUS')) * 1000  # convert from km to m
 
 if rainfall_mode == 'return_period':
     # Get rainfall values within pooling radius
-    rainfall = xr.open_dataset(glob(os.path.join(inputs_path, 'ukcp/pr*'))[0]).pr.rio.set_crs('EPSG:27700')
-    df = rainfall.rio.clip([Point(x, y).buffer(pooling_radius)]).to_dataframe().pr.dropna().reset_index()
+    ds = xr.open_dataset(glob(os.path.join(inputs_path, 'ukcp/pr*'))[0]).pr.rio.set_crs('EPSG:27700')
+    df = ds.rio.clip([Point(x, y).buffer(pooling_radius)]).to_dataframe().pr.dropna().reset_index()
 
     # Calculate rolling sum for duration
     rolling = df.set_index('time').groupby(
@@ -54,6 +55,8 @@ if rainfall_mode == 'return_period':
     rainfall_total = fitted_gev.ppf(return_period / len(amax))
 
 print(f'Rainfall Total:{rainfall_total}')
+rainfall = pd.DataFrame(([rainfall_total / (3600*duration) / 1000] * 2) + [0, 0],
+                        index=[0, duration*3600, duration*3600+1, duration*3600+2])
 
 # Create run directory
 run_path = os.path.join(outputs_path, 'run')
@@ -80,7 +83,7 @@ with MemoryFile() as dem:
         dataset.write(array)
 
     # Create input files
-    Model(dem=dem, rainfall=pd.DataFrame([rainfall_total / (3600*duration) / 1000] * 2), duration=3600*duration,
+    Model(dem=dem, rainfall=rainfall, duration=3600*duration,
           output_interval=600, open_boundaries=gpd.GeoDataFrame(geometry=[box(*bounds).buffer(100)]),
           buildings=buildings).write(run_path)
 

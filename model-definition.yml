@@ -49,6 +49,14 @@ spec:
         min: 1
         max: 6
 
+      - name: POST_EVENT_DURATION
+        title: Post-event Duration (hours)
+        desc: The duration of the dry period following the rainfall event
+        type: number
+        default: 0
+        min: 0
+        max: 6
+
       - name: SIZE
         title: Domain Size (km)
         desc: The width and height of the domain to create
