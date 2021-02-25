@@ -9,9 +9,20 @@ metadata:
     CityCAT (City Catchment Analysis Tool) is a unique software tool for modelling, analysis and visualisation of
     surface water flooding. CityCAT enables rapid assessment of combined pluvial and fluvial flood risk and allows
     assessment of the effects of different flood alleviation measures.
+
+    When used in return period mode, rainfall events are generated from observations using L-moments.
 spec:
   inputs:
     env:
+      - name: RAINFALL_MODE
+        title: Rainfall mode
+        desc: Generate events using return periods or total depth
+        options:
+          - name: return_periods
+            title: Return Periods
+          - name: total_depth
+            title: Total depth
+
       - name: RETURN_PERIOD
         title: Return Period (years)
         desc: The return period of the rainfall event
@@ -19,6 +30,14 @@ spec:
         default: 100
         min: 10
         max: 200
+
+      - name: TOTAL_DEPTH
+        title: Total depth (mm)
+        desc: The total depth of rainfall during the event
+        type: number
+        default: 40
+        min: 10
+        max: 100
 
       - name: DURATION
         title: Duration (hours)

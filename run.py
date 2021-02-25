@@ -25,6 +25,8 @@ if not os.path.exists(outputs_path):
     os.mkdir(outputs_path)
 
 # Read environment variables
+rainfall_mode = os.getenv('RAINFALL_MODE')
+rainfall_total = int(os.getenv('RAINFALL_TOTAL'))
 size = float(os.getenv('SIZE')) * 1000  # convert from km to m
 duration = int(os.getenv('DURATION'))
 return_period = int(os.getenv('RETURN_PERIOD'))
@@ -32,22 +34,25 @@ x = int(os.getenv('X'))
 y = int(os.getenv('Y'))
 pooling_radius = int(os.getenv('POOLING_RADIUS')) * 1000  # convert from km to m
 
-# Get rainfall values within pooling radius
-rainfall = xr.open_dataset(glob(os.path.join(inputs_path, 'ukcp/pr*'))[0]).pr.rio.set_crs('EPSG:27700')
-df = rainfall.rio.clip([Point(x, y).buffer(pooling_radius)]).to_dataframe().pr.dropna().reset_index()
 
-# Calculate rolling sum for duration
-rolling = df.set_index('time').groupby(
-   ['projection_x_coordinate', 'projection_y_coordinate']).pr.rolling(duration).sum().reset_index()
+if rainfall_mode == 'return_period':
+    # Get rainfall values within pooling radius
+    rainfall = xr.open_dataset(glob(os.path.join(inputs_path, 'ukcp/pr*'))[0]).pr.rio.set_crs('EPSG:27700')
+    df = rainfall.rio.clip([Point(x, y).buffer(pooling_radius)]).to_dataframe().pr.dropna().reset_index()
 
-# Get annual maxima
-amax = rolling.groupby(['projection_x_coordinate', 'projection_y_coordinate',
-                        [t.year for t in rolling.time.values]]).pr.max().reset_index(drop=True)
+    # Calculate rolling sum for duration
+    rolling = df.set_index('time').groupby(
+       ['projection_x_coordinate', 'projection_y_coordinate']).pr.rolling(duration).sum().reset_index()
 
-# Fit GEV and find rainfall total
-params = distr.gev.lmom_fit(amax.values)
-fitted_gev = distr.gev(**params)
-rainfall_total = fitted_gev.ppf(return_period / len(amax))
+    # Get annual maxima
+    amax = rolling.groupby(['projection_x_coordinate', 'projection_y_coordinate',
+                            [t.year for t in rolling.time.values]]).pr.max().reset_index(drop=True)
+
+    # Fit GEV and find rainfall total
+    params = distr.gev.lmom_fit(amax.values)
+    fitted_gev = distr.gev(**params)
+    rainfall_total = fitted_gev.ppf(return_period / len(amax))
+
 print(f'Rainfall Total:{rainfall_total}')
 
 # Create run directory
