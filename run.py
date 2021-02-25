@@ -26,7 +26,7 @@ if not os.path.exists(outputs_path):
 
 # Read environment variables
 rainfall_mode = os.getenv('RAINFALL_MODE')
-rainfall_total = int(os.getenv('RAINFALL_TOTAL'))
+rainfall_total = int(os.getenv('TOTAL_DEPTH'))
 size = float(os.getenv('SIZE')) * 1000  # convert from km to m
 duration = int(os.getenv('DURATION'))
 return_period = int(os.getenv('RETURN_PERIOD'))
