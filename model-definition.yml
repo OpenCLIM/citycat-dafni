@@ -16,9 +16,11 @@ spec:
     env:
       - name: RAINFALL_MODE
         title: Rainfall mode
-        desc: Generate events using return periods or total depth
+        type: string
+        desc: Generate events using return period or total depth
+        default: return_period
         options:
-          - name: return_periods
+          - name: return_period
             title: Return Periods
           - name: total_depth
             title: Total depth
