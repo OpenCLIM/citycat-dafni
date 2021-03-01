@@ -70,16 +70,12 @@ spec:
         desc: The X coordinate of the domain centroid in OSGB
         type: integer
         default: 258722
-        min: 225379
-        max: 311599
 
       - name: Y
         title: Domain Centroid Y (OSGB)
         desc: The Y coordinate of the domain centroid in OSGB
         type: integer
         default: 665028
-        min: 600201
-        max: 684815
 
       - name: POOLING_RADIUS
         title: Pooling radius (km)
