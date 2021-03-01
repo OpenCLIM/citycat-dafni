@@ -77,7 +77,7 @@ print(f'Files in buildings directory: {[os.path.basename(p) for p in building_pa
 buildings = gpd.read_file(building_paths[0], bbox=bounds) if len(building_paths) > 0 else None
 if len(building_paths) > 1:
     for building_path in building_paths[1:]:
-        buildings.append(gpd.read_file(building_path, bbox=bounds))
+        buildings = buildings.append(gpd.read_file(building_path, bbox=bounds))
 
 
 with MemoryFile() as dem:
