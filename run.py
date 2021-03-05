@@ -18,6 +18,8 @@ from rasterio.plot import show
 import matplotlib.pyplot as plt
 from matplotlib_scalebar.scalebar import ScaleBar
 from rasterio.fill import fillnodata
+from shapely.geometry import box
+from rasterio.coords import disjoint_bounds
 
 data_path = os.getenv('DATA_PATH', '/data')
 inputs_path = os.path.join(data_path, 'inputs')
@@ -67,9 +69,9 @@ if not os.path.exists(run_path):
 
 # Read and clip DEM
 dem_path = os.path.join(inputs_path, 'dem')
-dem_datasets = [rio.open(os.path.join(dem_path, p)) for p in os.listdir(dem_path) if p.endswith('.asc')]
+dem_datasets = [rio.open(os.path.join(dem_path, p)) for p in glob(os.path.join(dem_path, '*.asc'))]
 bounds = x-size/2, y-size/2, x+size/2, y+size/2
-array, transform = merge(dem_datasets, bounds=bounds)
+array, transform = merge(dem_datasets, bounds=bounds, precision=50)
 
 # Read buildings
 building_paths = glob(os.path.join(inputs_path, 'buildings/*.gpkg'))
