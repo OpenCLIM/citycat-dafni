@@ -85,6 +85,12 @@ spec:
         min: 10
         max: 50
 
+      - name: OPEN_BOUNDARIES
+        title: Open Boundaries
+        desc: Whether to set boundaries as open
+        type: boolean
+        default: True
+
     dataslots:
       - name: Digital Elevation Model
         description: Digital Elevation Model

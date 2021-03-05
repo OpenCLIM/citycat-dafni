@@ -35,6 +35,7 @@ return_period = int(os.getenv('RETURN_PERIOD'))
 x = int(os.getenv('X'))
 y = int(os.getenv('Y'))
 pooling_radius = int(os.getenv('POOLING_RADIUS')) * 1000  # convert from km to m
+open_boundaries = (os.getenv('OPEN_BOUNDARIES') == 'True')
 
 
 if rainfall_mode == 'return_period':
@@ -87,9 +88,14 @@ with MemoryFile() as dem:
         dataset.write(array)
 
     # Create input files
-    Model(dem=dem, rainfall=rainfall, duration=3600*duration+3600*post_event_duration,
-          output_interval=600, open_boundaries=gpd.GeoDataFrame(geometry=[box(*bounds).buffer(100)]),
-          buildings=buildings).write(run_path)
+    Model(
+        dem=dem,
+        rainfall=rainfall,
+        duration=3600*duration+3600*post_event_duration,
+        output_interval=600,
+        open_boundaries=gpd.GeoDataFrame(geometry=[box(*bounds).buffer(100)]) if open_boundaries else None,
+        buildings=buildings
+    ).write(run_path)
 
 # Copy executable
 shutil.copy('citycat.exe', run_path)

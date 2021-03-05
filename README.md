@@ -10,4 +10,4 @@
 - Create PNG map of max depth
 
 ## Usage 
-`docker build -t citycat-dafni . && docker run -v "data:/data" --env PYTHONUNBUFFERED=1 --env RAINFALL_MODE=return_period --env TOTAL_DEPTH=40 --env SIZE=0.1 --env DURATION=1 --env POST_EVENT_DURATION=0 --env RETURN_PERIOD=100 --env X=258722 --env Y=665028 --env POOLING_RADIUS=20 --name citycat-dafni citycat-dafni `
+`docker build -t citycat-dafni . && docker run -v "data:/data" --env PYTHONUNBUFFERED=1 --env RAINFALL_MODE=return_period --env TOTAL_DEPTH=40 --env SIZE=0.1 --env DURATION=1 --env POST_EVENT_DURATION=0 --env RETURN_PERIOD=100 --env X=258722 --env Y=665028 --env POOLING_RADIUS=20 --env OPEN_BOUNDARIES=True --name citycat-dafni citycat-dafni `
