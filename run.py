@@ -69,7 +69,7 @@ if not os.path.exists(run_path):
 
 # Read and clip DEM
 dem_path = os.path.join(inputs_path, 'dem')
-dem_datasets = [rio.open(os.path.join(dem_path, p)) for p in glob(os.path.join(dem_path, '*.asc'))]
+dem_datasets = [rio.open(os.path.join(dem_path, os.path.abspath(p))) for p in glob(os.path.join(dem_path, '*.asc'))]
 bounds = x-size/2, y-size/2, x+size/2, y+size/2
 array, transform = merge(dem_datasets, bounds=bounds, precision=50)
 
