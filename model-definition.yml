@@ -122,3 +122,7 @@ spec:
       - name: outputs/run/**/*
         type: folder
         desc: path to model outputs
+
+      - name: outputs/metadata.json
+        type: JSON
+        desc: NID metadata for outputs

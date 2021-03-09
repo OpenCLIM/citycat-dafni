@@ -10,7 +10,6 @@ import xarray as xr
 from glob import glob
 from shapely.geometry import Point
 from lmoments3 import distr
-from shapely.geometry import box
 import geopandas as gpd
 import rioxarray as rx
 from rasterio.crs import CRS
@@ -19,7 +18,8 @@ import matplotlib.pyplot as plt
 from matplotlib_scalebar.scalebar import ScaleBar
 from rasterio.fill import fillnodata
 from shapely.geometry import box
-from rasterio.coords import disjoint_bounds
+import json
+from datetime import datetime
 
 data_path = os.getenv('DATA_PATH', '/data')
 inputs_path = os.path.join(data_path, 'inputs')
@@ -134,3 +134,48 @@ with rio.open(geotiff_path) as ds:
 
     with rio.open(os.path.join(run_path, 'max_depth_interpolated.tif'), 'w', **ds.profile) as dst:
         dst.write(fillnodata(ds.read(1), mask=ds.read_masks(1)), 1)
+
+description = ''
+for variable in ['rainfall_mode', 'rainfall_total', 'size', 'duration', 'post_event_duration', 'return_period', 'x',
+                 'y', 'pooling_radius', 'open_boundaries']:
+    description += f'{variable}={globals()[variable]}, '
+
+
+# Create metadata file
+metadata = f"""{{
+  "@context": ["metadata-v1"],
+  "@type": "dcat:Dataset",
+  "dct:language": "en",
+  "dct:title": "CityCAT Output",
+  "dct:description": "{description[:-2]}",
+  "dcat:keyword": [
+    "citycat"
+  ],
+  "dct:subject": "Environment",
+  "dct:license": {{
+    "@type": "LicenseDocument",
+    "@id": "https://creativecommons.org/licences/by/4.0/",
+    "rdfs:label": null
+  }},
+  "dct:creator": ["DAFNI Workflows"],
+  "dcat:contactPoint": {{
+    "@type": "vcard:Organization",
+    "vcard:fn": "DAFNI",
+    "vcard:hasEmail": "support@dafni.ac.uk"
+  }},
+  "dct:created": "{datetime.now().isoformat()}",
+  "dct:PeriodOfTime": {{
+    "type": "dct:PeriodOfTime",
+    "time:hasBeginning": null,
+    "time:hasEnd": null
+  }},
+  "dafni_version_note": "created",
+  "dct:spatial": {{
+    "@type": "dct:Location",
+    "rdfs:label": null
+  }},
+  "geojson": {{}}
+}}
+"""
+with open(os.path.join(outputs_path, 'metadata.json'), 'w') as f:
+    f.write(metadata)
