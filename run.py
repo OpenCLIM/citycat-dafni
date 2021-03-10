@@ -18,8 +18,8 @@ import matplotlib.pyplot as plt
 from matplotlib_scalebar.scalebar import ScaleBar
 from rasterio.fill import fillnodata
 from shapely.geometry import box
-import json
 from datetime import datetime
+import numpy as np
 
 data_path = os.getenv('DATA_PATH', '/data')
 inputs_path = os.path.join(data_path, 'inputs')
@@ -59,8 +59,18 @@ if rainfall_mode == 'return_period':
     rainfall_total = fitted_gev.ppf(return_period / len(amax))
 
 print(f'Rainfall Total:{rainfall_total}')
-rainfall = pd.DataFrame(([rainfall_total / (3600*duration) / 1000] * 2) + [0, 0],
-                        index=[0, duration*3600, duration*3600+1, duration*3600+2])
+
+unit_profile = np.array([0.017627993, 0.027784045, 0.041248418, 0.064500665, 0.100127555, 0.145482534, 0.20645758,
+                         0.145482534, 0.100127555, 0.064500665, 0.041248418, 0.027784045, 0.017627993])
+
+rainfall_times = np.linspace(start=0, stop=duration*3600, num=len(unit_profile))
+
+unit_total = sum((unit_profile + np.append(unit_profile[1:], [0])) / 2 *
+                 (np.append(rainfall_times[1:], rainfall_times[[-1]]+1)-rainfall_times))
+
+
+rainfall = pd.DataFrame(list(unit_profile*rainfall_total/unit_total/1000) + [0, 0],
+                        index=list(rainfall_times) + [duration*3600+1, duration*3600+2])
 
 # Create run directory
 run_path = os.path.join(outputs_path, 'run')

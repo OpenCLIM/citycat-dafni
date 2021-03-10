@@ -3,8 +3,9 @@
 [![build](https://github.com/OpenCLIM/citycat-dafni/workflows/build/badge.svg)](https://github.com/OpenCLIM/citycat-dafni/actions)
 
 ## Features
-- Extract domain from OS Terrain 5
+- Extract domain from asc files
 - Generate return period events from UKCP18
+- Shape rainfall event to unit profile
 - Create archive of results
 - Create GeoTIFF of max depth
 - Create PNG map of max depth
