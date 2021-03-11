@@ -167,7 +167,7 @@ metadata = f"""{{
     "@id": "https://creativecommons.org/licences/by/4.0/",
     "rdfs:label": null
   }},
-  "dct:creator": [{"@type": "foaf:Organization"}],
+  "dct:creator": [{{"@type": "foaf:Organization"}}],
   "dcat:contactPoint": {{
     "@type": "vcard:Organization",
     "vcard:fn": "DAFNI",
