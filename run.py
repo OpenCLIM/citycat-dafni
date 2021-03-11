@@ -167,13 +167,13 @@ metadata = f"""{{
     "@id": "https://creativecommons.org/licences/by/4.0/",
     "rdfs:label": null
   }},
-  "dct:creator": ["DAFNI Workflows"],
+  "dct:creator": [{"@type": "foaf:Organization"}],
   "dcat:contactPoint": {{
     "@type": "vcard:Organization",
     "vcard:fn": "DAFNI",
     "vcard:hasEmail": "support@dafni.ac.uk"
   }},
-  "dct:created": "{datetime.now().isoformat()}",
+  "dct:created": "{datetime.now().isoformat()}Z",
   "dct:PeriodOfTime": {{
     "type": "dct:PeriodOfTime",
     "time:hasBeginning": null,
