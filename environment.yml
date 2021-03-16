@@ -6,7 +6,7 @@ dependencies:
   - scipy=1.5.2
   - pip
   - pip:
-      - citycatio==0.4.1
+      - citycatio==0.5.1
       - rioxarray==0.1.1
       - git+https://github.com/openhydrology/lmoments3.git@d2f30733275b4f4d7b4e86c13fd193733820c724
       - matplotlib-scalebar==0.7.2
