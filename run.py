@@ -105,7 +105,7 @@ with MemoryFile() as dem:
         rainfall=rainfall,
         duration=3600*duration+3600*post_event_duration,
         output_interval=600,
-        open_boundaries=gpd.GeoDataFrame(geometry=[box(*bounds).buffer(100)]) if open_boundaries else None,
+        open_external_boundaries=open_boundaries,
         buildings=buildings
     ).write(run_path)
 

@@ -89,7 +89,7 @@ spec:
         title: Open Boundaries
         desc: Whether to set boundaries as open
         type: boolean
-        default: False
+        default: True
 
     dataslots:
       - name: Digital Elevation Model
