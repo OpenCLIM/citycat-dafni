@@ -37,8 +37,9 @@ return_period = int(os.getenv('RETURN_PERIOD'))
 x = int(os.getenv('X'))
 y = int(os.getenv('Y'))
 pooling_radius = int(os.getenv('POOLING_RADIUS')) * 1000  # convert from km to m
-open_boundaries = (os.getenv('OPEN_BOUNDARIES') == 'True')
+open_boundaries = (os.getenv('OPEN_BOUNDARIES').lower() == 'true')
 
+nodata = -9999
 
 if rainfall_mode == 'return_period':
     # Get rainfall values within pooling radius
@@ -81,7 +82,8 @@ if not os.path.exists(run_path):
 dem_path = os.path.join(inputs_path, 'dem')
 dem_datasets = [rio.open(os.path.join(dem_path, os.path.abspath(p))) for p in glob(os.path.join(dem_path, '*.asc'))]
 bounds = x-size/2, y-size/2, x+size/2, y+size/2
-array, transform = merge(dem_datasets, bounds=bounds, precision=50)
+array, transform = merge(dem_datasets, bounds=bounds, precision=50, nodata=nodata)
+assert array[array != nodata].size > 0, "No DEM data available for selected location"
 
 # Read buildings
 building_paths = glob(os.path.join(inputs_path, 'buildings/*.gpkg'))
@@ -95,7 +97,7 @@ if len(building_paths) > 1:
 
 with MemoryFile() as dem:
     with dem.open(driver='GTiff', transform=transform, width=array.shape[1], height=array.shape[2], count=1,
-                  dtype=rio.float32) as dataset:
+                  dtype=rio.float32, nodata=nodata) as dataset:
         bounds = dataset.bounds
         dataset.write(array)
 
