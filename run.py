@@ -17,7 +17,6 @@ from rasterio.plot import show
 import matplotlib.pyplot as plt
 from matplotlib_scalebar.scalebar import ScaleBar
 from rasterio.fill import fillnodata
-from shapely.geometry import box
 from datetime import datetime
 import numpy as np
 
@@ -64,11 +63,11 @@ print(f'Rainfall Total:{rainfall_total}')
 unit_profile = np.array([0.017627993, 0.027784045, 0.041248418, 0.064500665, 0.100127555, 0.145482534, 0.20645758,
                          0.145482534, 0.100127555, 0.064500665, 0.041248418, 0.027784045, 0.017627993])
 
+# Fit storm profile
 rainfall_times = np.linspace(start=0, stop=duration*3600, num=len(unit_profile))
 
 unit_total = sum((unit_profile + np.append(unit_profile[1:], [0])) / 2 *
                  (np.append(rainfall_times[1:], rainfall_times[[-1]]+1)-rainfall_times))
-
 
 rainfall = pd.DataFrame(list(unit_profile*rainfall_total/unit_total/1000) + [0, 0],
                         index=list(rainfall_times) + [duration*3600+1, duration*3600+2])
@@ -144,6 +143,7 @@ with rio.open(geotiff_path) as ds:
     f.colorbar(im, label='Water Depth (m)')
     f.savefig(os.path.join(run_path, 'max_depth.png'), dpi=200)
 
+    # Create interpolated GeoTIFF
     with rio.open(os.path.join(run_path, 'max_depth_interpolated.tif'), 'w', **ds.profile) as dst:
         dst.write(fillnodata(ds.read(1), mask=ds.read_masks(1)), 1)
 
