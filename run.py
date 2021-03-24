@@ -113,11 +113,15 @@ with MemoryFile() as dem:
 # Copy executable
 shutil.copy('citycat.exe', run_path)
 
+start_timestamp = pd.Timestamp.now()
+
 # Run executable
 if os.name == 'nt':
    subprocess.call('cd {run_path} & citycat.exe -r 1 -c 1'.format(run_path=run_path), shell=True)
 else:
    subprocess.call('cd {run_path} && wine64 citycat.exe -r 1 -c 1'.format(run_path=run_path), shell=True)
+
+end_timestamp = pd.Timestamp.now()
 
 # Delete executable
 os.remove(os.path.join(run_path, 'citycat.exe'))
@@ -147,19 +151,29 @@ with rio.open(geotiff_path) as ds:
     with rio.open(os.path.join(run_path, 'max_depth_interpolated.tif'), 'w', **ds.profile) as dst:
         dst.write(fillnodata(ds.read(1), mask=ds.read_masks(1)), 1)
 
-description = ''
-for variable in ['rainfall_mode', 'rainfall_total', 'size', 'duration', 'post_event_duration', 'return_period', 'x',
-                 'y', 'pooling_radius', 'open_boundaries']:
-    description += f'{variable}={globals()[variable]}, '
+description = f'A {size/1000}x{size/1000}km domain centred at {x},{y} was simulated for ' \
+              f'{duration+post_event_duration}hrs, which took ' \
+              f'{round((end_timestamp-start_timestamp).total_seconds()/3600, 1)}hrs to complete. '
 
+if rainfall_mode == 'return_period':
+    description += f'The {return_period}yr {duration}hr event was generated using a radius of {pooling_radius/1000}m. '
+
+description += f'Total depth of rainfall was {int(round(rainfall_total, 0))}mm. '
+if post_event_duration > 0:
+    description += f'Following the {duration}hr event, the simulation continued for {post_event_duration}hrs. '
+
+if len(buildings) > 0:
+    description += f'{len(buildings)} buildings were extracted from the domain. '
+
+description += f'The boundaries of the event were set to {"open" if open_boundaries else "closed"}.'
 
 # Create metadata file
 metadata = f"""{{
   "@context": ["metadata-v1"],
   "@type": "dcat:Dataset",
   "dct:language": "en",
-  "dct:title": "CityCAT Output",
-  "dct:description": "{description[:-2]}",
+  "dct:title": "CityCAT Output ({pd.Timestamp.now().round('s').strftime('%H:%M %d/%m/%y')})",
+  "dct:description": "{description}",
   "dcat:keyword": [
     "citycat"
   ],
