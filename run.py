@@ -19,6 +19,8 @@ from matplotlib_scalebar.scalebar import ScaleBar
 from rasterio.fill import fillnodata
 from datetime import datetime
 import numpy as np
+from shapely.geometry import box
+import json
 
 data_path = os.getenv('DATA_PATH', '/data')
 inputs_path = os.path.join(data_path, 'inputs')
@@ -167,6 +169,11 @@ if len(buildings) > 0:
 
 description += f'The boundaries of the event were set to {"open" if open_boundaries else "closed"}.'
 
+geojson = json.dumps({
+    'type': 'Feature',
+    'properties': {},
+    'geometry': gpd.GeoSeries(box(*bounds), crs='EPSG:27700').to_crs(epsg=4326).iloc[0].__geo_interface__})
+
 # Create metadata file
 metadata = f"""{{
   "@context": ["metadata-v1"],
@@ -200,7 +207,7 @@ metadata = f"""{{
     "@type": "dct:Location",
     "rdfs:label": null
   }},
-  "geojson": {{}}
+  "geojson": {geojson}
 }}
 """
 with open(os.path.join(outputs_path, 'metadata.json'), 'w') as f:
