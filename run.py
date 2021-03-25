@@ -21,6 +21,7 @@ from datetime import datetime
 import numpy as np
 from shapely.geometry import box
 import json
+from matplotlib.colors import ListedColormap
 
 data_path = os.getenv('DATA_PATH', '/data')
 inputs_path = os.path.join(data_path, 'inputs')
@@ -140,14 +141,20 @@ output.to_geotiff(os.path.join(surface_maps, 'R1_C1_max_depth.csv'), geotiff_pat
 # Create depth map
 with rio.open(geotiff_path) as ds:
     f, ax = plt.subplots()
-    im = show(ds, ax=ax, cmap='Blues').get_images()[0]
+
+    cmap = ListedColormap(['#f7fbff', '#deebf7', '#c6dbef', '#9ecae1', '#6baed6', '#4292c6', '#2171b5', '#08519c',
+                           '#08306b', 'black'])
+    cmap.set_bad(color='lightgrey')
+    cmap.colorbar_extend = 'max'
+
+    im = show(ds, ax=ax, cmap=cmap, vmin=0, vmax=1).get_images()[0]
 
     ax.set_xticks([])
     ax.set_yticks([])
 
-    ax.add_artist(ScaleBar(ds.transform[0]))
+    ax.add_artist(ScaleBar(1, frameon=False))
     f.colorbar(im, label='Water Depth (m)')
-    f.savefig(os.path.join(run_path, 'max_depth.png'), dpi=200)
+    f.savefig(os.path.join(run_path, 'max_depth.png'), dpi=200, bbox_inches='tight')
 
     # Create interpolated GeoTIFF
     with rio.open(os.path.join(run_path, 'max_depth_interpolated.tif'), 'w', **ds.profile) as dst:
