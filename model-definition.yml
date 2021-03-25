@@ -116,6 +116,14 @@ spec:
         path: inputs/buildings
         required: false
 
+      - name: Green areas
+        description: Green areas
+        default:
+          - uid: a8f367ce-ce5e-4184-9c59-b5fed24585e7
+            versionUid: 22601187-67c5-4cbd-927f-0d5d38fe9dbe
+        path: inputs/green_areas
+        required: false
+
 
   outputs:
     datasets:

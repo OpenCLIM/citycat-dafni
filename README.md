@@ -6,7 +6,7 @@
 - [Generate return period events from UKCP18](#return-periods)
 - [Fit storm profile to rainfall event](#storm-profile)
 - [Extract domain from asc files](#dem)
-- [Extract buildings from gpkg and shp files](#buildings)
+- [Extract buildings and green areas from gpkg and shp files](#buildings-green-areas)
 - Create archive of results
 - Create GeoTIFF of max depth
 - [Interpolate depths to fill building gaps](#interpolate)
@@ -27,6 +27,14 @@ See [model-definition.yml](https://github.com/OpenCLIM/citycat-dafni/blob/master
 - Pooling radius
 - Open boundaries
 
+## Dataslots
+Data is made available to the model at the following paths. The spatial projection of all datasets is assumed to be 
+British National Grid. 
+- inputs/dem
+- inputs/ukcp
+- inputs/buildings
+- inputs/green_areas
+
 ## Usage 
 `docker build -t citycat-dafni . && docker run -v "data:/data" --env PYTHONUNBUFFERED=1 --env RAINFALL_MODE=return_period --env TOTAL_DEPTH=40 --env SIZE=0.1 --env DURATION=1 --env POST_EVENT_DURATION=0 --env RETURN_PERIOD=100 --env X=258722 --env Y=665028 --env POOLING_RADIUS=20 --env OPEN_BOUNDARIES=True --name citycat-dafni citycat-dafni `
 
@@ -44,9 +52,10 @@ The unit profile is scaled so that its total depth matches the rainfall total fo
 Rasterio is used to merge and crop all asc files in the `dem` dataslot using a boundary defined by `X`, `Y` and `SIZE`.
 A nodata value of -9999 is set as this is required by CityCAT.
 
-## <a name="buildings">Extract buildings from gpkg and shp files</a>
-All shp and gpkg files in the `buildings` dataslot are merged and clipped to the domain boundary using geopandas. 
-The projection is assumed to be British National Grid.
+## <a name="buildings-green-areas">Extract buildings and green areas from gpkg and shp files</a>
+All shp and gpkg files in the `buildings` and `green_areas` dataslots are merged and clipped to the domain boundary 
+using geopandas. Cells within building polygons are removed from the domain and infiltration is allowed at cells within 
+green areas polygons.
 
 ## <a name="interpolate">Interpolate depths to fill building gaps</a>
 The gaps in the domain created where buildings exist are filled using inverse distance weighting and a new GeoTIFF is created.
@@ -56,4 +65,4 @@ If the original results are used without interpolation, then there is likely to 
 ## <a name="png">Create PNG map of max depth</a>
 Rasterio is used to create a 1280 x 960 pixel map of maximum.
 This image is intended to enable quick interpretation of results but it may not always provide a good visualisation as 
-the colour scale is set based on the maximum overall depth.
+the colour scale has a maximum value of 1m.

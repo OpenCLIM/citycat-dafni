@@ -87,14 +87,23 @@ bounds = x-size/2, y-size/2, x+size/2, y+size/2
 array, transform = merge(dem_datasets, bounds=bounds, precision=50, nodata=nodata)
 assert array[array != nodata].size > 0, "No DEM data available for selected location"
 
+
+def read_geometries(path):
+    paths = glob(os.path.join(inputs_path, path, '*.gpkg'))
+    paths.extend(glob(os.path.join(inputs_path, path, '*.shp')))
+    print(f'Files in {path} directory: {[os.path.basename(p) for p in paths]}')
+    geometries = gpd.read_file(paths[0], bbox=bounds) if len(paths) > 0 else None
+    if len(paths) > 1:
+        for path in paths[1:]:
+            geometries = geometries.append(gpd.read_file(path, bbox=bounds))
+    return geometries
+
+
 # Read buildings
-building_paths = glob(os.path.join(inputs_path, 'buildings/*.gpkg'))
-building_paths.extend(glob(os.path.join(inputs_path, 'buildings/*.shp')))
-print(f'Files in buildings directory: {[os.path.basename(p) for p in building_paths]}')
-buildings = gpd.read_file(building_paths[0], bbox=bounds) if len(building_paths) > 0 else None
-if len(building_paths) > 1:
-    for building_path in building_paths[1:]:
-        buildings = buildings.append(gpd.read_file(building_path, bbox=bounds))
+buildings = read_geometries('buildings')
+
+# Read green areas
+green_areas = read_geometries('green_areas')
 
 
 with MemoryFile() as dem:
@@ -110,7 +119,9 @@ with MemoryFile() as dem:
         duration=3600*duration+3600*post_event_duration,
         output_interval=600,
         open_external_boundaries=open_boundaries,
-        buildings=buildings
+        buildings=buildings,
+        green_areas=green_areas,
+        use_infiltration=True
     ).write(run_path)
 
 # Copy executable
@@ -174,7 +185,10 @@ if post_event_duration > 0:
 if len(buildings) > 0:
     description += f'{len(buildings)} buildings were extracted from the domain. '
 
-description += f'The boundaries of the event were set to {"open" if open_boundaries else "closed"}.'
+if len(green_areas) > 0:
+    description += f'{len(green_areas)} green areas where infiltration can take place were defined. '
+
+description += f'The boundaries of the domain were set to {"open" if open_boundaries else "closed"}.'
 
 geojson = json.dumps({
     'type': 'Feature',
