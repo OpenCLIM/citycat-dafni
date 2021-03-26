@@ -182,10 +182,10 @@ description += f'Total depth of rainfall was {int(round(rainfall_total, 0))}mm. 
 if post_event_duration > 0:
     description += f'Following the {duration}hr event, the simulation continued for {post_event_duration}hrs. '
 
-if len(buildings) > 0:
+if buildings is not None and len(buildings) > 0:
     description += f'{len(buildings)} buildings were extracted from the domain. '
 
-if len(green_areas) > 0:
+if green_areas is not None and len(green_areas) > 0:
     description += f'{len(green_areas)} green areas where infiltration can take place were defined. '
 
 description += f'The boundaries of the domain were set to {"open" if open_boundaries else "closed"}.'
