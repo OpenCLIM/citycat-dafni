@@ -40,6 +40,7 @@ x = int(os.getenv('X'))
 y = int(os.getenv('Y'))
 pooling_radius = int(os.getenv('POOLING_RADIUS')) * 1000  # convert from km to m
 open_boundaries = (os.getenv('OPEN_BOUNDARIES').lower() == 'true')
+permeable_areas = os.getenv('PERMEABLE_AREAS')
 
 nodata = -9999
 
@@ -121,7 +122,8 @@ with MemoryFile() as dem:
         open_external_boundaries=open_boundaries,
         buildings=buildings,
         green_areas=green_areas,
-        use_infiltration=True
+        use_infiltration=True,
+        permeable_areas={'polygons': 0, 'impermeable': 1, 'permeable': 2}[permeable_areas]
     ).write(run_path)
 
 # Copy executable

@@ -61,7 +61,7 @@ spec:
         title: Domain Size (km)
         desc: The width and height of the domain to create
         type: number
-        default: 5.5
+        default: 6
         min: 0.1
         max: 10000
 
@@ -91,6 +91,20 @@ spec:
         type: boolean
         default: True
 
+      - name: PERMEABLE_AREAS
+        title: Permeable areas
+        type: string
+        desc: Use green areas polygons or assume everywhere is permeable or impermeable
+        default: polygons
+        options:
+          - name: polygons
+            title: Polygons
+          - name: permeable
+            title: Permeable
+          - name: impermeable
+            title: Impermeable
+
+
     dataslots:
       - name: Digital Elevation Model
         description: Digital Elevation Model
@@ -111,8 +125,8 @@ spec:
       - name: Buildings
         description: Buildings
         default:
-          - uid: c601eed8-1195-4a2b-9087-53ef81209d30
-            versionUid: e35fe6ce-c05f-467e-92fe-99c631a7e753
+          - uid: f996a732-7ff9-4d50-b1b5-b5bd04ae0921
+            versionUid: 7f0344d8-079c-41ce-828e-9caadc431628
         path: inputs/buildings
         required: false
 
