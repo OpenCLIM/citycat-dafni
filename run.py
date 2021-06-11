@@ -148,8 +148,35 @@ shutil.make_archive(surface_maps, 'zip', surface_maps)
 
 # Create geotiff
 geotiff_path = os.path.join(run_path, 'max_depth.tif')
-output.to_geotiff(os.path.join(surface_maps, 'R1_C1_max_depth.csv'), geotiff_path,
-                  crs=CRS.from_epsg(27700))
+netcdf_path = os.path.join(run_path, 'R1C1_SurfaceMaps.nc')
+
+output.to_geotiff(os.path.join(surface_maps, 'R1_C1_max_depth.csv'), geotiff_path, srid=27700)
+
+output.to_netcdf(surface_maps, out_path=netcdf_path, srid=27700,
+                 attributes=dict(
+                    rainfall_mode=rainfall_mode,
+                    rainfall_total=rainfall_total,
+                    size=size,
+                    duration=duration,
+                    post_event_duration=post_event_duration,
+                    return_period=return_period,
+                    x=x,
+                    y=y,
+                    pooling_radius=pooling_radius,
+                    open_boundaries=str(open_boundaries),
+                    permeable_areas=permeable_areas))
+
+a = xr.open_dataset(netcdf_path)
+
+velocity = xr.ufuncs.sqrt(a.x_vel**2+a.y_vel**2)
+max_velocity = velocity.max(dim='time').round(3)
+max_velocity = max_velocity.rio.set_crs('EPSG:27700')
+max_velocity.rio.to_raster(os.path.join(run_path, 'max_velocity.tif'))
+
+vd_product = velocity * a.depth
+max_vd_product = vd_product.max(dim='time').round(3)
+max_vd_product = max_vd_product.rio.set_crs('EPSG:27700')
+max_vd_product.rio.to_raster(os.path.join(run_path, 'max_vd_product.tif'))
 
 # Create depth map
 with rio.open(geotiff_path) as ds:
