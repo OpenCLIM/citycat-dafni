@@ -8,7 +8,8 @@
 - [Extract domain from asc files](#dem)
 - [Extract buildings and green areas from gpkg and shp files](#buildings-green-areas)
 - Create archive of results
-- Create GeoTIFF of max depth
+- Create GeoTIFF of max depth, max velocity and max depth velocity product
+- Create netCDF of depths and velocities at all time steps
 - [Interpolate depths to fill building gaps](#interpolate)
 - [Create PNG map of max depth](#png)
 - Create metadata JSON file
