@@ -60,7 +60,7 @@ if rainfall_mode == 'return_period':
     # Fit GEV and find rainfall total
     params = distr.gev.lmom_fit(amax.values)
     fitted_gev = distr.gev(**params)
-    rainfall_total = fitted_gev.ppf(return_period / len(amax))
+    rainfall_total = float(fitted_gev.ppf(return_period / len(amax)))
 
 print(f'Rainfall Total:{rainfall_total}')
 
