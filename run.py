@@ -170,12 +170,16 @@ a = xr.open_dataset(netcdf_path)
 
 velocity = xr.ufuncs.sqrt(a.x_vel**2+a.y_vel**2)
 max_velocity = velocity.max(dim='time').round(3)
-max_velocity = max_velocity.rio.set_crs('EPSG:27700')
+max_velocity = max_velocity.where(xr.ufuncs.isfinite(max_velocity), other=output.fill_value)
+max_velocity.rio.set_crs('EPSG:27700')
+max_velocity.rio.set_nodata(output.fill_value)
 max_velocity.rio.to_raster(os.path.join(run_path, 'max_velocity.tif'))
 
 vd_product = velocity * a.depth
 max_vd_product = vd_product.max(dim='time').round(3)
-max_vd_product = max_vd_product.rio.set_crs('EPSG:27700')
+max_vd_product = max_vd_product.where(xr.ufuncs.isfinite(max_vd_product), other=output.fill_value)
+max_vd_product.rio.set_crs('EPSG:27700')
+max_vd_product.rio.set_nodata(output.fill_value)
 max_vd_product.rio.to_raster(os.path.join(run_path, 'max_vd_product.tif'))
 
 # Create depth map
