@@ -168,7 +168,7 @@ output.to_netcdf(surface_maps, out_path=netcdf_path, srid=27700,
 
 a = xr.open_dataset(netcdf_path)
 
-velocity = xr.ufuncs.sqrt(a.x_vel**2+a.y_vel**2)
+velocity = xr.ufuncs.sqrt(a.x_vel**2+a.y_vel**2).astype(np.float64)
 max_velocity = velocity.max(dim='time').round(3)
 max_velocity = max_velocity.where(xr.ufuncs.isfinite(max_velocity), other=output.fill_value)
 max_velocity.rio.set_crs('EPSG:27700')
