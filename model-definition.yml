@@ -30,8 +30,8 @@ spec:
         desc: The return period of the rainfall event
         type: number
         default: 100
-        min: 10
-        max: 200
+        min: 2
+        max: 10000
 
       - name: TOTAL_DEPTH
         title: Total depth (mm)

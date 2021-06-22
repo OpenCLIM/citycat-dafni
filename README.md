@@ -65,6 +65,6 @@ This was carried out to allow point geometries to be used when calculating impac
 If the original results are used without interpolation, then there is likely to be missing data at asset locations.
 
 ## <a name="png">Create PNG map of max depth</a>
-Rasterio is used to create a 1280 x 960 pixel map of maximum.
+Rasterio is used to create a 1280 x 960 pixel map of maximum depth.
 This image is intended to enable quick interpretation of results but it may not always provide a good visualisation as 
 the colour scale has a maximum value of 1m.
