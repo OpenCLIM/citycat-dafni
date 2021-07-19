@@ -104,6 +104,12 @@ spec:
           - name: impermeable
             title: Impermeable
 
+      - name: ROOF_STORAGE
+        title: Roof storage
+        desc: Depth of water that can be stored on rooftops (m)
+        type: number
+        default: 0
+
 
     dataslots:
       - name: Digital Elevation Model

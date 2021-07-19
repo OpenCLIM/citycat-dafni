@@ -41,6 +41,7 @@ y = int(os.getenv('Y'))
 pooling_radius = int(os.getenv('POOLING_RADIUS')) * 1000  # convert from km to m
 open_boundaries = (os.getenv('OPEN_BOUNDARIES').lower() == 'true')
 permeable_areas = os.getenv('PERMEABLE_AREAS')
+roof_storage = float(os.getenv('ROOF_STORAGE'))
 
 nodata = -9999
 
@@ -123,7 +124,8 @@ with MemoryFile() as dem:
         buildings=buildings,
         green_areas=green_areas,
         use_infiltration=True,
-        permeable_areas={'polygons': 0, 'impermeable': 1, 'permeable': 2}[permeable_areas]
+        permeable_areas={'polygons': 0, 'impermeable': 1, 'permeable': 2}[permeable_areas],
+        roof_storage=roof_storage
     ).write(run_path)
 
 # Copy executable
@@ -222,6 +224,9 @@ if green_areas is not None and len(green_areas) > 0:
     description += f'{len(green_areas)} green areas where infiltration can take place were defined. '
 
 description += f'The boundaries of the domain were set to {"open" if open_boundaries else "closed"}.'
+
+if roof_storage > 0:
+    description += ' There was {}m of roof storage.'
 
 geojson = json.dumps({
     'type': 'Feature',

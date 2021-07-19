@@ -28,6 +28,7 @@ See [model-definition.yml](https://github.com/OpenCLIM/citycat-dafni/blob/master
 - Pooling radius
 - Open boundaries
 - Permeable areas
+- Roof storage
 
 ## Dataslots
 Data is made available to the model at the following paths. The spatial projection of all datasets is assumed to be 
