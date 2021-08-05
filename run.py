@@ -46,22 +46,9 @@ roof_storage = float(os.getenv('ROOF_STORAGE'))
 nodata = -9999
 
 if rainfall_mode == 'return_period':
-    # Get rainfall values within pooling radius
-    ds = xr.open_dataset(glob(os.path.join(inputs_path, 'ukcp/pr*'))[0]).pr.rio.set_crs('EPSG:27700')
-    df = ds.rio.clip([Point(x, y).buffer(pooling_radius)]).to_dataframe().pr.dropna().reset_index()
+    ddf = pd.read_csv(glob(os.path.join(inputs_path, 'feh13-ddf', '*.csv'))[0], header=8, index_col='Duration hours')
+    rainfall_total = ddf.loc[duration, f'{return_period} year rainfall (mm)']
 
-    # Calculate rolling sum for duration
-    rolling = df.set_index('time').groupby(
-       ['projection_x_coordinate', 'projection_y_coordinate']).pr.rolling(duration).sum().reset_index()
-
-    # Get annual maxima
-    amax = rolling.groupby(['projection_x_coordinate', 'projection_y_coordinate',
-                            [t.year for t in rolling.time.values]]).pr.max().reset_index(drop=True)
-
-    # Fit GEV and find rainfall total
-    params = distr.gev.lmom_fit(amax.values)
-    fitted_gev = distr.gev(**params)
-    rainfall_total = float(fitted_gev.ppf(return_period / len(amax)))
 
 print(f'Rainfall Total:{rainfall_total}')
 
