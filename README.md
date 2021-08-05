@@ -26,7 +26,6 @@ See [model-definition.yml](https://github.com/OpenCLIM/citycat-dafni/blob/master
 - Size
 - X
 - Y
-- Pooling radius
 - Open boundaries
 - Permeable areas
 - Roof storage
@@ -41,7 +40,7 @@ British National Grid.
 - inputs/green_areas
 
 ## Usage 
-`docker build -t citycat-dafni . && docker run -v $PWD/data:/data --env PYTHONUNBUFFERED=1 --env RAINFALL_MODE=return_period --env SIZE=0.1 --env DURATION=1 --env POST_EVENT_DURATION=0 --env TOTAL_DEPTH=40 --env RETURN_PERIOD=100 --env X=258722 --env Y=665028 --env POOLING_RADIUS=10 --env OPEN_BOUNDARIES=True --env PERMEABLE_AREAS=polygons --env ROOF_STORAGE=0 --env TIME_HORIZON=2050 --name citycat-dafni-return-period citycat-dafni`
+`docker build -t citycat-dafni . && docker run -v $PWD/data:/data --env PYTHONUNBUFFERED=1 --env RAINFALL_MODE=return_period --env SIZE=0.1 --env DURATION=1 --env POST_EVENT_DURATION=0 --env TOTAL_DEPTH=40 --env RETURN_PERIOD=100 --env X=258722 --env Y=665028 --env OPEN_BOUNDARIES=True --env PERMEABLE_AREAS=polygons --env ROOF_STORAGE=0 --env TIME_HORIZON=2050 --name citycat-dafni-return-period citycat-dafni`
 
 ## <a name="return-periods">Uplift return period rainfall depth based on UKCP18</a>
 If `RAINFALL_MODE` is set to "return period" then the rainfall depth corresponding to the `DURATION` and `RETURN_PERIOD`
