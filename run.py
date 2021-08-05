@@ -36,7 +36,6 @@ post_event_duration = int(os.getenv('POST_EVENT_DURATION'))
 return_period = int(os.getenv('RETURN_PERIOD'))
 x = int(os.getenv('X'))
 y = int(os.getenv('Y'))
-pooling_radius = int(os.getenv('POOLING_RADIUS')) * 1000  # convert from km to m
 open_boundaries = (os.getenv('OPEN_BOUNDARIES').lower() == 'true')
 permeable_areas = os.getenv('PERMEABLE_AREAS')
 roof_storage = float(os.getenv('ROOF_STORAGE'))
@@ -160,7 +159,6 @@ output.to_netcdf(surface_maps, out_path=netcdf_path, srid=27700,
                     return_period=return_period,
                     x=x,
                     y=y,
-                    pooling_radius=pooling_radius,
                     open_boundaries=str(open_boundaries),
                     permeable_areas=permeable_areas))
 
@@ -207,7 +205,10 @@ description = f'A {size/1000}x{size/1000}km domain centred at {x},{y} was simula
               f'{round((end_timestamp-start_timestamp).total_seconds()/3600, 1)}hrs to complete. '
 
 if rainfall_mode == 'return_period':
-    description += f'The {return_period}yr {duration}hr event was generated using a radius of {pooling_radius/1000}m. '
+    description += f'The {return_period}yr {duration}hr event was extracted from FEH13'
+    if time_horizon != 'baseline':
+        description += f' and uplifted by {row["Uplift_50"]}%'
+    description += '. '
 
 description += f'Total depth of rainfall was {int(round(rainfall_total, 0))}mm. '
 if post_event_duration > 0:
