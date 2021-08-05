@@ -83,14 +83,6 @@ spec:
         type: integer
         default: 665028
 
-      - name: POOLING_RADIUS
-        title: Pooling radius (km)
-        desc: The threshold distance for selecting UKCP cells to pool
-        type: integer
-        default: 20
-        min: 10
-        max: 50
-
       - name: OPEN_BOUNDARIES
         title: Open Boundaries
         desc: Whether to set boundaries as open
