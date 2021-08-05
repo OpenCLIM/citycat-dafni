@@ -144,13 +144,15 @@ spec:
           - uid: aeb05b13-cf96-432e-bda7-56dce46d809c
             versionUid: 29912ec9-dd36-427e-8f36-7c2a814ce67c
         path: inputs/feh13-ddf
-        required: true
+        required: false
 
       - name: Future Drainage
         description: Set of CSV files containing gridded uplifts based on UKCP18 from the FUTURE-DRAINAGE project
         default:
           - uid: e7fc818c-57ce-4ef6-8cf2-dd2ad6a1cedf
             versionUid: 9ba92ddb-69de-40fc-8899-1a229b0b7bbb
+        path: inputs/future-drainage
+        required: false
 
       - name: Buildings
         description: Buildings

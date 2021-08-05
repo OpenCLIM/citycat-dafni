@@ -3,7 +3,7 @@
 [![build](https://github.com/OpenCLIM/citycat-dafni/workflows/build/badge.svg)](https://github.com/OpenCLIM/citycat-dafni/actions)
 
 ## Features
-- [Generate return period events from UKCP18](#return-periods)
+- [Uplift return period rainfall depth based on UKCP18](#return-periods)
 - [Fit storm profile to rainfall event](#storm-profile)
 - [Extract domain from asc files](#dem)
 - [Extract buildings and green areas from gpkg and shp files](#buildings-green-areas)
@@ -19,6 +19,7 @@ The following parameters must be provided as environment variables (in uppercase
 See [model-definition.yml](https://github.com/OpenCLIM/citycat-dafni/blob/master/model-definition.yml) for further details.
 - Rainfall mode
 - Return period
+- Time horizon
 - Total depth
 - Duration
 - Post-event duration
@@ -34,18 +35,19 @@ See [model-definition.yml](https://github.com/OpenCLIM/citycat-dafni/blob/master
 Data is made available to the model at the following paths. The spatial projection of all datasets is assumed to be 
 British National Grid. 
 - inputs/dem
-- inputs/ukcp
+- inputs/future-drainage
+- inputs/feh13-ddf
 - inputs/buildings
 - inputs/green_areas
 
 ## Usage 
-`docker build -t citycat-dafni . && docker run -v "data:/data" --env PYTHONUNBUFFERED=1 --env RAINFALL_MODE=return_period --env TOTAL_DEPTH=40 --env SIZE=0.1 --env DURATION=1 --env POST_EVENT_DURATION=0 --env RETURN_PERIOD=100 --env X=258722 --env Y=665028 --env POOLING_RADIUS=20 --env OPEN_BOUNDARIES=True --name citycat-dafni citycat-dafni `
+`docker build -t citycat-dafni . && docker run -v $PWD/data:/data --env PYTHONUNBUFFERED=1 --env RAINFALL_MODE=return_period --env SIZE=0.1 --env DURATION=1 --env POST_EVENT_DURATION=0 --env TOTAL_DEPTH=40 --env RETURN_PERIOD=100 --env X=258722 --env Y=665028 --env POOLING_RADIUS=10 --env OPEN_BOUNDARIES=True --env PERMEABLE_AREAS=polygons --env ROOF_STORAGE=0 --env TIME_HORIZON=2050 --name citycat-dafni-return-period citycat-dafni`
 
-## <a name="return-periods">Generate return period events from UKCP18</a>
-If `RAINFALL_MODE` is set to "return period" then the data in the `UKCP18` dataslot will be used to derive a rainfall total.
-The netCDF is first clipped to an area generated using a combination of `X`, `Y`, `SIZE` and `POOLING_RADIUS`.
-Then, the annual maxium rainfall totals for the given duration are calculated using pandas.
-Finally, the [lmoments3](https://github.com/openhydrology/lmoments3) package is used to fit a generalised extreme value distribution from which the rainfall total corresponding to the `RETURN_PERIOD` is extracted.
+## <a name="return-periods">Uplift return period rainfall depth based on UKCP18</a>
+If `RAINFALL_MODE` is set to "return period" then the rainfall depth corresponding to the `DURATION` and `RETURN_PERIOD`
+are extracted from the DDF curve in the `feh13-ddf` dataslot.
+This depth is then increased by the percentage corresponding to the `TIME_HORIOZON` from the uplifts in the 
+`future-drainage` dataslot.
 
 ## <a name="storm-profile">Fit storm profile to rainfall event</a>
 A storm profile is fitted to the rainfall total using the `DURATION` of the event and a static unit profile.
