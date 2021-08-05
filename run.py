@@ -47,8 +47,7 @@ nodata = -9999
 
 if rainfall_mode == 'return_period':
     ddf = pd.read_csv(glob(os.path.join(inputs_path, 'feh13-ddf', '*.csv'))[0], header=8, index_col='Duration hours')
-    rainfall_total = ddf.loc[duration, f'{return_period} year rainfall (mm)']
-
+    rainfall_total = float(ddf.loc[duration, f'{return_period} year rainfall (mm)'])
 
 print(f'Rainfall Total:{rainfall_total}')
 
