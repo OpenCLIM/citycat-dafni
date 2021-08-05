@@ -28,10 +28,12 @@ spec:
       - name: RETURN_PERIOD
         title: Return Period (years)
         desc: The return period of the rainfall event
-        type: number
+        type: string
         default: 100
-        min: 2
-        max: 10000
+        options:
+          - name: 2
+          - name: 30
+          - name: 100
 
       - name: TOTAL_DEPTH
         title: Total depth (mm)
@@ -44,10 +46,14 @@ spec:
       - name: DURATION
         title: Duration (hours)
         desc: The duration of the rainfall event
-        type: number
+        type: string
         default: 1
-        min: 1
-        max: 10
+        options:
+          - name: 1
+          - name: 3
+          - name: 6
+          - name: 12
+          - name: 24
 
       - name: POST_EVENT_DURATION
         title: Post-event Duration (hours)
@@ -112,6 +118,16 @@ spec:
         min: 0
         max: 10
 
+      - name: TIME_HORIZON
+        title: Time horizon
+        desc: The time horizon to use when selecting rainfall uplifts, baseline indicates no uplift
+        type: string
+        default: 2070
+        options:
+          - name: 2070
+          - name: 2050
+          - name: baseline
+
 
     dataslots:
       - name: Digital Elevation Model
@@ -122,13 +138,21 @@ spec:
         path: inputs/dem
         required: true
 
-      - name: UKCP18
-        description: 5km Climate Data from UKCP18 in OSGB
+      - name: FEH13 DDF
+        description: CSV file containing a depth-duration-frequency curve from the Flood Estimation Handbook web service
         default:
-          - uid: 05ed95c7-e339-4b9a-9bc8-bb9aad07bc33
-            versionUid: bb541d63-38d6-4fce-b431-29b50668df6b
-        path: inputs/ukcp
-        required: true
+          - uid: aeb05b13-cf96-432e-bda7-56dce46d809c
+            versionUid: 29912ec9-dd36-427e-8f36-7c2a814ce67c
+        path: inputs/feh13-ddf
+        required: false
+
+      - name: Future Drainage
+        description: Set of CSV files containing gridded uplifts based on UKCP18 from the FUTURE-DRAINAGE project
+        default:
+          - uid: e7fc818c-57ce-4ef6-8cf2-dd2ad6a1cedf
+            versionUid: 9ba92ddb-69de-40fc-8899-1a229b0b7bbb
+        path: inputs/future-drainage
+        required: false
 
       - name: Buildings
         description: Buildings

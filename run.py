@@ -8,11 +8,8 @@ import pandas as pd
 import subprocess
 import xarray as xr
 from glob import glob
-from shapely.geometry import Point
-from lmoments3 import distr
 import geopandas as gpd
 import rioxarray as rx
-from rasterio.crs import CRS
 from rasterio.plot import show
 import matplotlib.pyplot as plt
 from matplotlib_scalebar.scalebar import ScaleBar
@@ -31,6 +28,7 @@ if not os.path.exists(outputs_path):
 
 # Read environment variables
 rainfall_mode = os.getenv('RAINFALL_MODE')
+time_horizon = os.getenv('TIME_HORIZON')
 rainfall_total = int(os.getenv('TOTAL_DEPTH'))
 size = float(os.getenv('SIZE')) * 1000  # convert from km to m
 duration = int(os.getenv('DURATION'))
@@ -46,24 +44,22 @@ roof_storage = float(os.getenv('ROOF_STORAGE'))
 nodata = -9999
 
 if rainfall_mode == 'return_period':
-    # Get rainfall values within pooling radius
-    ds = xr.open_dataset(glob(os.path.join(inputs_path, 'ukcp/pr*'))[0]).pr.rio.set_crs('EPSG:27700')
-    df = ds.rio.clip([Point(x, y).buffer(pooling_radius)]).to_dataframe().pr.dropna().reset_index()
+    ddf = pd.read_csv(glob(os.path.join(inputs_path, 'feh13-ddf', '*.csv'))[0], header=8, index_col='Duration hours')
+    rainfall_total = float(ddf.loc[duration, f'{return_period} year rainfall (mm)'])
 
-    # Calculate rolling sum for duration
-    rolling = df.set_index('time').groupby(
-       ['projection_x_coordinate', 'projection_y_coordinate']).pr.rolling(duration).sum().reset_index()
+    if time_horizon != 'baseline':
+        uplifts = pd.read_csv(
+            os.path.join(inputs_path,
+                         'future-drainage',
+                         f'uplift_land-cpm_uk_5km_{time_horizon}_{duration:02}hr_pr_{return_period:03}yrl.csv'),
+            header=1)
 
-    # Get annual maxima
-    amax = rolling.groupby(['projection_x_coordinate', 'projection_y_coordinate',
-                            [t.year for t in rolling.time.values]]).pr.max().reset_index(drop=True)
+        row = uplifts.iloc[
+            np.argmin(np.sum((np.asarray(uplifts[['easting', 'northing']]) - np.array([x, y])) ** 2, axis=1))]
 
-    # Fit GEV and find rainfall total
-    params = distr.gev.lmom_fit(amax.values)
-    fitted_gev = distr.gev(**params)
-    rainfall_total = float(fitted_gev.ppf(return_period / len(amax)))
+        rainfall_total *= float(((100 + row['Uplift_50']) / 100))
 
-print(f'Rainfall Total:{rainfall_total}')
+print(f'Rainfall Total: {rainfall_total}')
 
 unit_profile = np.array([0.017627993, 0.027784045, 0.041248418, 0.064500665, 0.100127555, 0.145482534, 0.20645758,
                          0.145482534, 0.100127555, 0.064500665, 0.041248418, 0.027784045, 0.017627993])
