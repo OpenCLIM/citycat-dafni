@@ -31,6 +31,7 @@ if not os.path.exists(outputs_path):
 
 # Read environment variables
 rainfall_mode = os.getenv('RAINFALL_MODE')
+time_horizon = os.getenv('TIME_HORIZON')
 rainfall_total = int(os.getenv('TOTAL_DEPTH'))
 size = float(os.getenv('SIZE')) * 1000  # convert from km to m
 duration = int(os.getenv('DURATION'))
@@ -49,7 +50,22 @@ if rainfall_mode == 'return_period':
     ddf = pd.read_csv(glob(os.path.join(inputs_path, 'feh13-ddf', '*.csv'))[0], header=8, index_col='Duration hours')
     rainfall_total = float(ddf.loc[duration, f'{return_period} year rainfall (mm)'])
 
-print(f'Rainfall Total:{rainfall_total}')
+print(f'Rainfall Total: {rainfall_total}')
+
+if time_horizon != 'baseline':
+    uplifts = pd.read_csv(
+        os.path.join(inputs_path,
+                     'future-drainage',
+                     f'uplift_land-cpm_uk_5km_{time_horizon}_{duration:02}hr_pr_{return_period:03}yrl.csv'),
+        header=1)
+
+    row = uplifts.iloc[
+        np.argmin(np.sum((np.asarray(uplifts[['easting', 'northing']]) - np.array([x, y])) ** 2, axis=1))]
+
+    rainfall_total *= float(((100+row['Uplift_50']) / 100))
+
+    print(f'Uplifted rainfall: {rainfall_total}')
+
 
 unit_profile = np.array([0.017627993, 0.027784045, 0.041248418, 0.064500665, 0.100127555, 0.145482534, 0.20645758,
                          0.145482534, 0.100127555, 0.064500665, 0.041248418, 0.027784045, 0.017627993])
