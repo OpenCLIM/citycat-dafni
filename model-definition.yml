@@ -17,8 +17,9 @@ spec:
       - name: RAINFALL_MODE
         title: Rainfall mode
         type: string
-        desc: Generate events using return period or total depth
+        description: Generate events using return period or total depth
         default: return_period
+        required: true
         options:
           - name: return_period
             title: Return Periods
@@ -27,9 +28,10 @@ spec:
 
       - name: RETURN_PERIOD
         title: Return Period (years)
-        desc: The return period of the rainfall event
+        description: The return period of the rainfall event
         type: string
         default: 100
+        required: false
         options:
           - name: 2
           - name: 30
@@ -37,17 +39,19 @@ spec:
 
       - name: TOTAL_DEPTH
         title: Total depth (mm)
-        desc: The total depth of rainfall during the event
+        description: The total depth of rainfall during the event
         type: number
         default: 40
+        required: false
         min: 10
         max: 100
 
       - name: DURATION
         title: Duration (hours)
-        desc: The duration of the rainfall event
+        description: The duration of the rainfall event
         type: string
         default: 1
+        required: true
         options:
           - name: 1
           - name: 3
@@ -57,43 +61,49 @@ spec:
 
       - name: POST_EVENT_DURATION
         title: Post-event Duration (hours)
-        desc: The duration of the dry period following the rainfall event
+        description: The duration of the dry period following the rainfall event
         type: number
+        required: true
         default: 0
         min: 0
         max: 10
 
       - name: SIZE
         title: Domain Size (km)
-        desc: The width and height of the domain to create
+        description: The width and height of the domain to create
         type: number
         default: 6
+        required: true
         min: 0.1
         max: 10000
 
       - name: X
         title: Domain Centroid X (OSGB)
-        desc: The X coordinate of the domain centroid in OSGB
+        description: The X coordinate of the domain centroid in OSGB
         type: integer
         default: 258722
+        required: true
 
       - name: Y
         title: Domain Centroid Y (OSGB)
-        desc: The Y coordinate of the domain centroid in OSGB
+        description: The Y coordinate of the domain centroid in OSGB
         type: integer
         default: 665028
+        required: true
 
       - name: OPEN_BOUNDARIES
         title: Open Boundaries
-        desc: Whether to set boundaries as open
+        description: Whether to set boundaries as open
         type: boolean
         default: True
+        required: true
 
       - name: PERMEABLE_AREAS
         title: Permeable areas
         type: string
-        desc: Use green areas polygons or assume everywhere is permeable or impermeable
+        description: Use green areas polygons or assume everywhere is permeable or impermeable
         default: polygons
+        required: true
         options:
           - name: polygons
             title: Polygons
@@ -104,17 +114,19 @@ spec:
 
       - name: ROOF_STORAGE
         title: Roof storage
-        desc: Depth of water that can be stored on rooftops (m)
+        description: Depth of water that can be stored on rooftops (m)
         type: number
         default: 0
+        required: true
         min: 0
         max: 10
 
       - name: TIME_HORIZON
         title: Time horizon
-        desc: The time horizon to use when selecting rainfall uplifts, baseline indicates no uplift
+        description: The time horizon to use when selecting rainfall uplifts, baseline indicates no uplift
         type: string
         default: 2070
+        required: false
         options:
           - name: 2070
           - name: 2050
@@ -167,8 +179,8 @@ spec:
     datasets:
       - name: outputs/run/**/*
         type: folder
-        desc: path to model outputs
+        description: path to model outputs
 
       - name: outputs/metadata.json
         type: JSON
-        desc: NID metadata for outputs
+        description: NID metadata for outputs
