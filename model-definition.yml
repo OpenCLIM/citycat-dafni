@@ -34,8 +34,11 @@ spec:
         required: false
         options:
           - name: 2
+            title: 2
           - name: 30
+            title: 30
           - name: 100
+            title: 100
 
       - name: TOTAL_DEPTH
         title: Total depth (mm)
@@ -54,10 +57,15 @@ spec:
         required: true
         options:
           - name: 1
+            title: 1
           - name: 3
+            title: 3
           - name: 6
+            title: 6
           - name: 12
+            title: 12
           - name: 24
+            title: 24
 
       - name: POST_EVENT_DURATION
         title: Post-event Duration (hours)
@@ -129,8 +137,11 @@ spec:
         required: false
         options:
           - name: 2070
+            title: 2070
           - name: 2050
+            title: 2050
           - name: baseline
+            title: baseline
 
 
     dataslots:
