@@ -29,7 +29,7 @@ spec:
       - name: RETURN_PERIOD
         title: Return Period (years)
         description: The return period of the rainfall event
-        type: string
+        type: integer
         default: 100
         required: false
         options:
@@ -52,7 +52,7 @@ spec:
       - name: DURATION
         title: Duration (hours)
         description: The duration of the rainfall event
-        type: string
+        type: integer
         default: 1
         required: true
         options:
@@ -133,13 +133,13 @@ spec:
         title: Time horizon
         description: The time horizon to use when selecting rainfall uplifts, baseline indicates no uplift
         type: string
-        default: 2070
+        default: '2070'
         required: false
         options:
-          - name: 2070
-            title: 2070
-          - name: 2050
-            title: 2050
+          - name: '2070'
+            title: '2070'
+          - name: '2050'
+            title: '2050'
           - name: baseline
             title: baseline
 
