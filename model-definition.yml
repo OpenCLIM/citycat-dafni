@@ -29,16 +29,16 @@ spec:
       - name: RETURN_PERIOD
         title: Return Period (years)
         description: The return period of the rainfall event
-        type: integer
-        default: 100
+        type: string
+        default: '100'
         required: false
         options:
-          - name: 2
-            title: 2
-          - name: 30
-            title: 30
-          - name: 100
-            title: 100
+          - name: '2'
+            title: '2'
+          - name: '30'
+            title: '30'
+          - name: '100'
+            title: '100'
 
       - name: TOTAL_DEPTH
         title: Total depth (mm)
@@ -52,20 +52,20 @@ spec:
       - name: DURATION
         title: Duration (hours)
         description: The duration of the rainfall event
-        type: integer
-        default: 1
+        type: string
+        default: '1'
         required: true
         options:
-          - name: 1
-            title: 1
-          - name: 3
-            title: 3
-          - name: 6
-            title: 6
-          - name: 12
-            title: 12
-          - name: 24
-            title: 24
+          - name: '1'
+            title: '1'
+          - name: '3'
+            title: '3'
+          - name: '6'
+            title: '6'
+          - name: '12'
+            title: '12'
+          - name: '24'
+            title: '24'
 
       - name: POST_EVENT_DURATION
         title: Post-event Duration (hours)
