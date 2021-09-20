@@ -3,6 +3,7 @@ api_version: v1beta1
 metadata:
   display_name: CityCAT (OpenCLIM)
   name: citycat-openclim
+  publisher: Newcastle University
   summary: CityCAT is a tool for modelling, analysis and visualisation of surface water flooding.
   description: >
     CityCAT (City Catchment Analysis Tool) is a unique software tool for modelling, analysis and visualisation of
@@ -12,7 +13,7 @@ metadata:
     When used in return period mode, rainfall events are generated from observations using L-moments.
 spec:
   inputs:
-    env:
+    parameters:
       - name: RAINFALL_MODE
         title: Rainfall mode
         type: string
