@@ -1,8 +1,7 @@
 kind: Model
-apiVersion: v1alpha5
+api_version: v1beta1
 metadata:
-  displayName: CityCAT (OpenCLIM)
-  type: Modelling
+  display_name: CityCAT (OpenCLIM)
   name: citycat-openclim
   summary: CityCAT is a tool for modelling, analysis and visualisation of surface water flooding.
   description: >
@@ -148,40 +147,35 @@ spec:
       - name: Digital Elevation Model
         description: Digital Elevation Model
         default:
-          - uid: 692b8834-6939-4cec-8b56-4bda1483aec4
-            versionUid: 859e810c-4597-44b6-8d92-a9f00e45dcbd
+          - 859e810c-4597-44b6-8d92-a9f00e45dcbd
         path: inputs/dem
         required: true
 
       - name: FEH13 DDF
         description: CSV file containing a depth-duration-frequency curve from the Flood Estimation Handbook web service
         default:
-          - uid: aeb05b13-cf96-432e-bda7-56dce46d809c
-            versionUid: 29912ec9-dd36-427e-8f36-7c2a814ce67c
+          - 29912ec9-dd36-427e-8f36-7c2a814ce67c
         path: inputs/feh13-ddf
         required: false
 
       - name: Future Drainage
         description: Set of CSV files containing gridded uplifts based on UKCP18 from the FUTURE-DRAINAGE project
         default:
-          - uid: e7fc818c-57ce-4ef6-8cf2-dd2ad6a1cedf
-            versionUid: 9ba92ddb-69de-40fc-8899-1a229b0b7bbb
+          - 9ba92ddb-69de-40fc-8899-1a229b0b7bbb
         path: inputs/future-drainage
         required: false
 
       - name: Buildings
         description: Buildings
         default:
-          - uid: f996a732-7ff9-4d50-b1b5-b5bd04ae0921
-            versionUid: 7f0344d8-079c-41ce-828e-9caadc431628
+          - 7f0344d8-079c-41ce-828e-9caadc431628
         path: inputs/buildings
         required: false
 
       - name: Green areas
         description: Green areas
         default:
-          - uid: a8f367ce-ce5e-4184-9c59-b5fed24585e7
-            versionUid: 22601187-67c5-4cbd-927f-0d5d38fe9dbe
+          - 22601187-67c5-4cbd-927f-0d5d38fe9dbe
         path: inputs/green_areas
         required: false
 
