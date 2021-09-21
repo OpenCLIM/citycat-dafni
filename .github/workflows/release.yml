@@ -25,7 +25,7 @@ jobs:
         run: echo "TAG=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
 
       - name: Upload to DAFNI
-        uses: dafnifacility/dafni-model-uploader@v1.8
+        uses: dafnifacility/dafni-model-uploader@v1.9
         with:
           definition-path: './model-definition.yml'
           image-path: './citycat-dafni.tar.gz'
