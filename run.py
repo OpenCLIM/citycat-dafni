@@ -39,6 +39,8 @@ y = int(os.getenv('Y'))
 open_boundaries = (os.getenv('OPEN_BOUNDARIES').lower() == 'true')
 permeable_areas = os.getenv('PERMEABLE_AREAS')
 roof_storage = float(os.getenv('ROOF_STORAGE'))
+discharge_start = os.getenv('DISCHARGE_START')
+discharge_end = os.getenv('DISCHARGE_END')
 
 nodata = -9999
 
@@ -102,6 +104,25 @@ buildings = read_geometries('buildings')
 # Read green areas
 green_areas = read_geometries('green_areas')
 
+# Read shetran timeseries
+discharge_path = glob(os.path.join(inputs_path, 'shetran/*discharge_sim_everytimestep.txt'))
+if len(discharge_path) > 0:
+    discharge_path = discharge_path[0]
+    discharge = pd.read_csv(discharge_path, delim_whitespace=True)
+    discharge.index = pd.to_datetime(discharge['Date_dd/mm/yyyy_hours'], format='%d/%m/%Y_%H:%M:%S')
+    discharge = discharge.loc[discharge_start:discharge_end, 'Outlet_Discharge(m3/s)']
+
+    # Convert to seconds since start
+    discharge.index = (discharge.index - discharge.index[0]).total_seconds()
+
+    # Divide by the length of each cell
+    discharge = discharge / 5
+
+    flow_polygons = gpd.read_file(glob(os.path.join(inputs_path, 'flow_polygons', '*'))[0]).geometry
+else:
+    discharge = None
+    flow_polygons = None
+
 
 with MemoryFile() as dem:
     with dem.open(driver='GTiff', transform=transform, width=array.shape[1], height=array.shape[2], count=1,
@@ -120,7 +141,10 @@ with MemoryFile() as dem:
         green_areas=green_areas,
         use_infiltration=True,
         permeable_areas={'polygons': 0, 'impermeable': 1, 'permeable': 2}[permeable_areas],
-        roof_storage=roof_storage
+        roof_storage=roof_storage,
+        flow=discharge,
+        flow_polygons=flow_polygons
+
     ).write(run_path)
 
 # Copy executable
@@ -130,9 +154,9 @@ start_timestamp = pd.Timestamp.now()
 
 # Run executable
 if os.name == 'nt':
-   subprocess.call('cd {run_path} & citycat.exe -r 1 -c 1'.format(run_path=run_path), shell=True)
+    subprocess.call('cd {run_path} & citycat.exe -r 1 -c 1'.format(run_path=run_path), shell=True)
 else:
-   subprocess.call('cd {run_path} && wine64 citycat.exe -r 1 -c 1'.format(run_path=run_path), shell=True)
+    subprocess.call('cd {run_path} && wine64 citycat.exe -r 1 -c 1'.format(run_path=run_path), shell=True)
 
 end_timestamp = pd.Timestamp.now()
 

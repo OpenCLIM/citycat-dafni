@@ -6,6 +6,6 @@ dependencies:
   - scipy=1.5.2
   - pip
   - pip:
-      - citycatio==0.7.3
+      - citycatio==0.9.0
       - rioxarray==0.1.1
       - matplotlib-scalebar==0.7.2

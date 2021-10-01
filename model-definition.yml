@@ -180,6 +180,15 @@ spec:
         path: inputs/green_areas
         required: false
 
+      - name: SHETran output
+        description: Outputs from SHETran, the outlet discharge is routed via the flow polygons
+        path: inputs/shetran
+        required: false
+
+      - name: Flow Polygons
+        description: Polygons used to define where discharge from shetran will enter the domain
+        path: inputs/flow_polygons
+        required: false
 
   outputs:
     datasets:
