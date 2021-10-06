@@ -11,9 +11,6 @@ jobs:
       - name: decrypt citycat
         run: gpg --batch --output citycat.exe --passphrase ${{ secrets.CITYCAT_PASSPHRASE }} --decrypt citycat.exe.gpg
 
-      - name: decrypt feh13
-        run: gpg --batch --output data/inputs/feh13-ddf/FEH_Point_Rainfall_FEH2013_AM_259500_665500.csv --passphrase ${{ secrets.FEH13_PASSPHRASE }} --decrypt data/inputs/feh13-ddf/FEH_Point_Rainfall_FEH2013_AM_259500_665500.csv.gpg
-
       - name: build image
         run: docker build -t citycat-dafni .
 
