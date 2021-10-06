@@ -48,7 +48,8 @@ if rainfall_mode == 'return_period':
     uplifts = pd.read_csv(
         os.path.join(inputs_path,
                      'future-drainage',
-                     f'Uplift_{time_horizon}_{duration}hr_Pr_{return_period}yrRL_Grid.csv'),
+                     f'Uplift_{time_horizon if time_horizon != "baseline" else "2050"}_{duration}hr_Pr_{return_period}'
+                     f'yrRL_Grid.csv'),
         header=1)
 
     row = uplifts.iloc[
