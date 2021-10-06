@@ -45,18 +45,18 @@ discharge_end = os.getenv('DISCHARGE_END')
 nodata = -9999
 
 if rainfall_mode == 'return_period':
-    ddf = pd.read_csv(glob(os.path.join(inputs_path, 'feh13-ddf', '*.csv'))[0], header=8, index_col='Duration hours')
-    rainfall_total = float(ddf.loc[duration, f'{return_period} year rainfall (mm)'])
+    uplifts = pd.read_csv(
+        os.path.join(inputs_path,
+                     'future-drainage',
+                     f'Uplift_{time_horizon}_{duration}hr_Pr_{return_period}yrRL_Grid.csv'),
+        header=1)
+
+    row = uplifts.iloc[
+        np.argmin(np.sum((np.asarray(uplifts[['easting', 'northing']]) - np.array([x, y])) ** 2, axis=1))]
+
+    rainfall_total = row[f'ReturnLevel.{return_period}']
 
     if time_horizon != 'baseline':
-        uplifts = pd.read_csv(
-            os.path.join(inputs_path,
-                         'future-drainage',
-                         f'uplift_land-cpm_uk_5km_{time_horizon}_{duration:02}hr_pr_{return_period:03}yrl.csv'),
-            header=1)
-
-        row = uplifts.iloc[
-            np.argmin(np.sum((np.asarray(uplifts[['easting', 'northing']]) - np.array([x, y])) ** 2, axis=1))]
 
         rainfall_total *= float(((100 + row['Uplift_50']) / 100))
 
@@ -176,7 +176,7 @@ output.to_geotiff(os.path.join(surface_maps, 'R1_C1_max_depth.csv'), geotiff_pat
 output.to_netcdf(surface_maps, out_path=netcdf_path, srid=27700,
                  attributes=dict(
                     rainfall_mode=rainfall_mode,
-                    rainfall_total=rainfall_total,
+                    rainfall_total=float(rainfall_total),
                     size=size,
                     duration=duration,
                     post_event_duration=post_event_duration,
@@ -224,6 +224,7 @@ with rio.open(geotiff_path) as ds:
     with rio.open(os.path.join(run_path, 'max_depth_interpolated.tif'), 'w', **ds.profile) as dst:
         dst.write(fillnodata(ds.read(1), mask=ds.read_masks(1)), 1)
 
+title = f'CityCAT Output {x},{y} {size/1000}km {duration}hr'
 description = f'A {size/1000}x{size/1000}km domain centred at {x},{y} was simulated for ' \
               f'{duration+post_event_duration}hrs, which took ' \
               f'{round((end_timestamp-start_timestamp).total_seconds()/3600, 1)}hrs to complete. '
@@ -234,7 +235,10 @@ if rainfall_mode == 'return_period':
         description += f' and uplifted by {row["Uplift_50"]}%'
     description += '. '
 
+    title += f' {time_horizon} {return_period}yr'
+
 description += f'Total depth of rainfall was {int(round(rainfall_total, 0))}mm. '
+title += f' {int(round(rainfall_total, 0))}mm'
 if post_event_duration > 0:
     description += f'Following the {duration}hr event, the simulation continued for {post_event_duration}hrs. '
 
@@ -247,19 +251,20 @@ if green_areas is not None and len(green_areas) > 0:
 description += f'The boundaries of the domain were set to {"open" if open_boundaries else "closed"}.'
 
 if roof_storage > 0:
-    description += ' There was {}m of roof storage.'
+    description += ' There was {roof_storage}m of roof storage.'
+    title += f' storage={roof_storage}m'
 
 geojson = json.dumps({
     'type': 'Feature',
     'properties': {},
     'geometry': gpd.GeoSeries(box(*bounds), crs='EPSG:27700').to_crs(epsg=4326).iloc[0].__geo_interface__})
-
+print(title)
 # Create metadata file
 metadata = f"""{{
   "@context": ["metadata-v1"],
   "@type": "dcat:Dataset",
   "dct:language": "en",
-  "dct:title": "CityCAT Output ({pd.Timestamp.now().round('s').strftime('%H:%M %d/%m/%y')})",
+  "dct:title": {title},
   "dct:description": "{description}",
   "dcat:keyword": [
     "citycat"

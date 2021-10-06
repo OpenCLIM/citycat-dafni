@@ -35,6 +35,12 @@ spec:
         options:
           - name: '2'
             title: '2'
+          - name: '5'
+            title: '5'
+          - name: '10'
+            title: '10'
+          - name: '25'
+            title: '25'
           - name: '30'
             title: '30'
           - name: '100'
@@ -152,17 +158,10 @@ spec:
         path: inputs/dem
         required: true
 
-      - name: FEH13 DDF
-        description: CSV file containing a depth-duration-frequency curve from the Flood Estimation Handbook web service
-        default:
-          - 29912ec9-dd36-427e-8f36-7c2a814ce67c
-        path: inputs/feh13-ddf
-        required: false
-
       - name: Future Drainage
         description: Set of CSV files containing gridded uplifts based on UKCP18 from the FUTURE-DRAINAGE project
         default:
-          - 9ba92ddb-69de-40fc-8899-1a229b0b7bbb
+          - 0f7733d1-f6f3-44c4-b27e-9eecf6773e34
         path: inputs/future-drainage
         required: false
 
