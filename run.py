@@ -265,7 +265,7 @@ metadata = f"""{{
   "@context": ["metadata-v1"],
   "@type": "dcat:Dataset",
   "dct:language": "en",
-  "dct:title": {title},
+  "dct:title": "{title}",
   "dct:description": "{description}",
   "dcat:keyword": [
     "citycat"
