@@ -7,6 +7,7 @@
 - [Fit storm profile to rainfall event](#storm-profile)
 - [Extract domain from asc files](#dem)
 - [Extract buildings and green areas from gpkg and shp files](#buildings-green-areas)
+- [Input discharge from a SHETran simulation](#shetran)
 - Create archive of results
 - Create GeoTIFF of max depth, max velocity and max depth velocity product
 - Create netCDF of depths and velocities at all time steps
@@ -35,18 +36,19 @@ Data is made available to the model at the following paths. The spatial projecti
 British National Grid. 
 - inputs/dem
 - inputs/future-drainage
-- inputs/feh13-ddf
 - inputs/buildings
 - inputs/green_areas
+- inputs/shetran
+- inputs/flow_polygons
 
 ## Usage 
 `docker build -t citycat-dafni . && docker run -v $PWD/data:/data --env PYTHONUNBUFFERED=1 --env RAINFALL_MODE=return_period --env SIZE=0.1 --env DURATION=1 --env POST_EVENT_DURATION=0 --env TOTAL_DEPTH=40 --env RETURN_PERIOD=100 --env X=258722 --env Y=665028 --env OPEN_BOUNDARIES=True --env PERMEABLE_AREAS=polygons --env ROOF_STORAGE=0 --env TIME_HORIZON=2050 --name citycat-dafni-return-period citycat-dafni`
 
 ## <a name="return-periods">Uplift return period rainfall depth based on UKCP18</a>
 If `RAINFALL_MODE` is set to "return period" then the rainfall depth corresponding to the `DURATION` and `RETURN_PERIOD`
-are extracted from the DDF curve in the `feh13-ddf` dataslot.
-This depth is then increased by the percentage corresponding to the `TIME_HORIOZON` from the uplifts in the 
-`future-drainage` dataslot.
+are extracted from the relevant CSV file in the `future-drainage` dataslot.
+If the `TIME_HORIZON` is anything other than `baseline`, the rainfall depth is then uplifted by the percentage given
+in the CSV file.
 
 ## <a name="storm-profile">Fit storm profile to rainfall event</a>
 A storm profile is fitted to the rainfall total using the `DURATION` of the event and a static unit profile.
@@ -60,6 +62,12 @@ A nodata value of -9999 is set as this is required by CityCAT.
 All shp and gpkg files in the `buildings` and `green_areas` dataslots are merged and clipped to the domain boundary 
 using geopandas. Cells within building polygons are removed from the domain and infiltration is allowed at cells within 
 green areas polygons.
+
+## <a name="shetran">Input discharge from a SHETran simulation</a>
+If a discharge file is present, containing flows from SHETran at every time step, in the `shetran` dataslot, this is 
+read and converted to the required format. A file must be present in the `flow_polygons` dataslot, containing the 
+areas within which discharge will enter the domain. The discharge is magnified in CityCAT by the number of cell 
+boundaries that fall within the flow polygons so it is usually necessary to only encompass a single boundary.
 
 ## <a name="interpolate">Interpolate depths to fill building gaps</a>
 The gaps in the domain created where buildings exist are filled using inverse distance weighting and a new GeoTIFF is created.

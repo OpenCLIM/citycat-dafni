@@ -5,6 +5,7 @@ metadata:
   name: citycat-openclim
   publisher: Newcastle University
   summary: CityCAT is a tool for modelling, analysis and visualisation of surface water flooding.
+  source_code: https://github.com/OpenCLIM/citycat-dafni
   description: >
     CityCAT (City Catchment Analysis Tool) is a unique software tool for modelling, analysis and visualisation of
     surface water flooding. CityCAT enables rapid assessment of combined pluvial and fluvial flood risk and allows
