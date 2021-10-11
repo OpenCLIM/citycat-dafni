@@ -231,7 +231,7 @@ description = f'A {size/1000}x{size/1000}km domain centred at {x},{y} was simula
               f'{round((end_timestamp-start_timestamp).total_seconds()/3600, 1)}hrs to complete. '
 
 if rainfall_mode == 'return_period':
-    description += f'The {return_period}yr {duration}hr event was extracted from FEH13'
+    description += f'The {return_period}yr {duration}hr event was extracted from the UKCP18 baseline (1980-2000)'
     if time_horizon != 'baseline':
         description += f' and uplifted by {row["Uplift_50"]}%'
     description += '. '
