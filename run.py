@@ -11,6 +11,7 @@ from glob import glob
 import geopandas as gpd
 import rioxarray as rx
 from rasterio.plot import show
+from rasterio.mask import mask
 import matplotlib.pyplot as plt
 from matplotlib_scalebar.scalebar import ScaleBar
 from rasterio.fill import fillnodata
@@ -83,27 +84,33 @@ if not os.path.exists(run_path):
 # Read and clip DEM
 dem_path = os.path.join(inputs_path, 'dem')
 dem_datasets = [rio.open(os.path.join(dem_path, os.path.abspath(p))) for p in glob(os.path.join(dem_path, '*.asc'))]
-bounds = x-size/2, y-size/2, x+size/2, y+size/2
-array, transform = merge(dem_datasets, bounds=bounds, precision=50, nodata=nodata)
-assert array[array != nodata].size > 0, "No DEM data available for selected location"
 
 
-def read_geometries(path):
+def read_geometries(path, bbox=None):
     paths = glob(os.path.join(inputs_path, path, '*.gpkg'))
     paths.extend(glob(os.path.join(inputs_path, path, '*.shp')))
     print(f'Files in {path} directory: {[os.path.basename(p) for p in paths]}')
-    geometries = gpd.read_file(paths[0], bbox=bounds) if len(paths) > 0 else None
+    geometries = gpd.read_file(paths[0], bbox=bbox) if len(paths) > 0 else None
     if len(paths) > 1:
         for path in paths[1:]:
             geometries = geometries.append(gpd.read_file(path, bbox=bounds))
     return geometries
 
 
+boundary = read_geometries('boundary')
+
+if boundary is None:
+    bounds = x-size/2, y-size/2, x+size/2, y+size/2
+else:
+    bounds = boundary.geometry.total_bounds.tolist()
+array, transform = merge(dem_datasets, bounds=bounds, precision=50, nodata=nodata)
+assert array[array != nodata].size > 0, "No DEM data available for selected location"
+
 # Read buildings
-buildings = read_geometries('buildings')
+buildings = read_geometries('buildings', bbox=bounds)
 
 # Read green areas
-green_areas = read_geometries('green_areas')
+green_areas = read_geometries('green_areas', bbox=bounds)
 
 # Read shetran timeseries
 discharge_path = glob(os.path.join(inputs_path, 'shetran/*discharge_sim_everytimestep.txt'))
@@ -125,28 +132,36 @@ else:
     flow_polygons = None
 
 
-with MemoryFile() as dem:
+dem = MemoryFile()
+with dem.open(driver='GTiff', transform=transform, width=array.shape[1], height=array.shape[2], count=1,
+              dtype=rio.float32, nodata=nodata) as dataset:
+    bounds = dataset.bounds
+    dataset.write(array)
+
+if boundary is not None:
+    array, transform = mask(dem.open(), boundary.geometry, crop=True)
+    dem = MemoryFile()
     with dem.open(driver='GTiff', transform=transform, width=array.shape[1], height=array.shape[2], count=1,
                   dtype=rio.float32, nodata=nodata) as dataset:
         bounds = dataset.bounds
         dataset.write(array)
 
-    # Create input files
-    Model(
-        dem=dem,
-        rainfall=rainfall,
-        duration=3600*duration+3600*post_event_duration,
-        output_interval=600,
-        open_external_boundaries=open_boundaries,
-        buildings=buildings,
-        green_areas=green_areas,
-        use_infiltration=True,
-        permeable_areas={'polygons': 0, 'impermeable': 1, 'permeable': 2}[permeable_areas],
-        roof_storage=roof_storage,
-        flow=discharge,
-        flow_polygons=flow_polygons
+# Create input files
+Model(
+    dem=dem,
+    rainfall=rainfall,
+    duration=3600*duration+3600*post_event_duration,
+    output_interval=600,
+    open_external_boundaries=open_boundaries,
+    buildings=buildings,
+    green_areas=green_areas,
+    use_infiltration=True,
+    permeable_areas={'polygons': 0, 'impermeable': 1, 'permeable': 2}[permeable_areas],
+    roof_storage=roof_storage,
+    flow=discharge,
+    flow_polygons=flow_polygons
 
-    ).write(run_path)
+).write(run_path)
 
 # Copy executable
 shutil.copy('citycat.exe', run_path)

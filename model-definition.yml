@@ -11,7 +11,7 @@ metadata:
     surface water flooding. CityCAT enables rapid assessment of combined pluvial and fluvial flood risk and allows
     assessment of the effects of different flood alleviation measures.
 
-    When used in return period mode, rainfall events are generated from observations using L-moments.
+    When used in return period mode, rainfall events are extracted from the UKCP19 baseline period 1980-2000.
 spec:
   inputs:
     parameters:
@@ -159,11 +159,16 @@ spec:
         path: inputs/dem
         required: true
 
+      - name: Boundary
+        description: Boundary used to clip DEM
+        default:
+          - 859e810c-4597-44b6-8d92-a9f00e45dcbd
+        path: inputs/dem
+        required: false
+
       - name: Future Drainage
         description: Set of CSV files containing gridded uplifts based on UKCP18 from the FUTURE-DRAINAGE project
-        default:
-          - 0f7733d1-f6f3-44c4-b27e-9eecf6773e34
-        path: inputs/future-drainage
+        path: inputs/boundary
         required: false
 
       - name: Buildings
