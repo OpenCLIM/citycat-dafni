@@ -45,6 +45,25 @@ discharge_end = os.getenv('DISCHARGE_END')
 
 nodata = -9999
 
+
+def read_geometries(path, bbox=None):
+    paths = glob(os.path.join(inputs_path, path, '*.gpkg'))
+    paths.extend(glob(os.path.join(inputs_path, path, '*.shp')))
+    print(f'Files in {path} directory: {[os.path.basename(p) for p in paths]}')
+    geometries = gpd.read_file(paths[0], bbox=bbox) if len(paths) > 0 else None
+    if len(paths) > 1:
+        for path in paths[1:]:
+            geometries = geometries.append(gpd.read_file(path, bbox=bounds))
+    return geometries
+
+
+boundary = read_geometries('boundary')
+
+if boundary is None:
+    bounds = x-size/2, y-size/2, x+size/2, y+size/2
+else:
+    bounds = boundary.geometry.total_bounds.tolist()
+
 if rainfall_mode == 'return_period':
     uplifts = pd.read_csv(
         os.path.join(inputs_path,
@@ -53,8 +72,12 @@ if rainfall_mode == 'return_period':
                      f'yrRL_Grid.csv'),
         header=1)
 
-    row = uplifts.iloc[
-        np.argmin(np.sum((np.asarray(uplifts[['easting', 'northing']]) - np.array([x, y])) ** 2, axis=1))]
+    uplifts = gpd.GeoDataFrame(uplifts,
+                               geometry=gpd.points_from_xy(uplifts.easting, uplifts.northing).buffer(2500, cap_style=3))
+    if boundary is not None:
+        row = uplifts[uplifts.intersects(boundary.geometry.unary_union)].mean()
+    else:
+        row = uplifts[uplifts.intersects(box(*bounds))].mean()
 
     rainfall_total = row[f'ReturnLevel.{return_period}']
 
@@ -85,24 +108,6 @@ if not os.path.exists(run_path):
 dem_path = os.path.join(inputs_path, 'dem')
 dem_datasets = [rio.open(os.path.join(dem_path, os.path.abspath(p))) for p in glob(os.path.join(dem_path, '*.asc'))]
 
-
-def read_geometries(path, bbox=None):
-    paths = glob(os.path.join(inputs_path, path, '*.gpkg'))
-    paths.extend(glob(os.path.join(inputs_path, path, '*.shp')))
-    print(f'Files in {path} directory: {[os.path.basename(p) for p in paths]}')
-    geometries = gpd.read_file(paths[0], bbox=bbox) if len(paths) > 0 else None
-    if len(paths) > 1:
-        for path in paths[1:]:
-            geometries = geometries.append(gpd.read_file(path, bbox=bounds))
-    return geometries
-
-
-boundary = read_geometries('boundary')
-
-if boundary is None:
-    bounds = x-size/2, y-size/2, x+size/2, y+size/2
-else:
-    bounds = boundary.geometry.total_bounds.tolist()
 array, transform = merge(dem_datasets, bounds=bounds, precision=50, nodata=nodata)
 assert array[array != nodata].size > 0, "No DEM data available for selected location"
 
