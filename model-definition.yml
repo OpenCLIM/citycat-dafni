@@ -150,6 +150,15 @@ spec:
           - name: baseline
             title: baseline
 
+      - name: DISCHARGE
+        title: Discharge (m3/s)
+        description: Value of discharge boundary condition, if provided then the flow polygons dataslot is required
+        type: number
+        default: 0
+        required: true
+        min: 0
+        max: 1000
+
 
     dataslots:
       - name: Digital Elevation Model
@@ -185,13 +194,8 @@ spec:
         path: inputs/green_areas
         required: false
 
-      - name: SHETran output
-        description: Outputs from SHETran, the outlet discharge is routed via the flow polygons
-        path: inputs/shetran
-        required: false
-
       - name: Flow Polygons
-        description: Polygons used to define where discharge from shetran will enter the domain
+        description: Polygons used to define where discharge will enter the domain
         path: inputs/flow_polygons
         required: false
 

@@ -30,6 +30,7 @@ See [model-definition.yml](https://github.com/OpenCLIM/citycat-dafni/blob/master
 - Open boundaries
 - Permeable areas
 - Roof storage
+- Discharge
 
 ## Dataslots
 Data is made available to the model at the following paths. The spatial projection of all datasets is assumed to be 
@@ -38,7 +39,6 @@ British National Grid.
 - inputs/future-drainage
 - inputs/buildings
 - inputs/green_areas
-- inputs/shetran
 - inputs/flow_polygons
 
 ## Usage 
@@ -63,11 +63,12 @@ All shp and gpkg files in the `buildings` and `green_areas` dataslots are merged
 using geopandas. Cells within building polygons are removed from the domain and infiltration is allowed at cells within 
 green areas polygons.
 
-## <a name="shetran">Input discharge from a SHETran simulation</a>
-If a discharge file is present, containing flows from SHETran at every time step, in the `shetran` dataslot, this is 
-read and converted to the required format. A file must be present in the `flow_polygons` dataslot, containing the 
-areas within which discharge will enter the domain. The discharge is magnified in CityCAT by the number of cell 
-boundaries that fall within the flow polygons so it is usually necessary to only encompass a single boundary.
+## <a name="shetran">Input discharge boundary condition</a>
+If the `DISCHARGE` parameter is greater than zero, a CityCAT input file will be created which adds a boundary condition
+to the simulation, corresponding to the total amount of discharge. A file must be present in the `flow_polygons` 
+dataslot, containing the areas within which discharge will enter the domain. The discharge is magnified in CityCAT by 
+the number of cell boundaries that fall within the flow polygons, so it is  necessary to only encompass a single 
+boundary, or to divide the discharge value by the number of cell boundaries covered.
 
 ## <a name="interpolate">Interpolate depths to fill building gaps</a>
 The gaps in the domain created where buildings exist are filled using inverse distance weighting and a new GeoTIFF is created.

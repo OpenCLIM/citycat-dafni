@@ -40,8 +40,7 @@ y = int(os.getenv('Y'))
 open_boundaries = (os.getenv('OPEN_BOUNDARIES').lower() == 'true')
 permeable_areas = os.getenv('PERMEABLE_AREAS')
 roof_storage = float(os.getenv('ROOF_STORAGE'))
-discharge_start = os.getenv('DISCHARGE_START')
-discharge_end = os.getenv('DISCHARGE_END')
+discharge = float(os.getenv('DISCHARGE'))
 
 nodata = -9999
 
@@ -117,19 +116,14 @@ buildings = read_geometries('buildings', bbox=bounds)
 # Read green areas
 green_areas = read_geometries('green_areas', bbox=bounds)
 
-# Read shetran timeseries
-discharge_path = glob(os.path.join(inputs_path, 'shetran/*discharge_sim_everytimestep.txt'))
-if len(discharge_path) > 0:
-    discharge_path = discharge_path[0]
-    discharge = pd.read_csv(discharge_path, delim_whitespace=True)
-    discharge.index = pd.to_datetime(discharge['Date_dd/mm/yyyy_hours'], format='%d/%m/%Y_%H:%M:%S')
-    discharge = discharge.loc[discharge_start:discharge_end, 'Outlet_Discharge(m3/s)']
+total_duration = 3600*duration+3600*post_event_duration
 
-    # Convert to seconds since start
-    discharge.index = (discharge.index - discharge.index[0]).total_seconds()
+# Create discharge timeseries
+if discharge > 0:
+    discharge = pd.Series([discharge, discharge], index=[0, total_duration])
 
     # Divide by the length of each cell
-    discharge = discharge / 5
+    discharge = discharge.divide(5)
 
     flow_polygons = gpd.read_file(glob(os.path.join(inputs_path, 'flow_polygons', '*'))[0]).geometry
 else:
@@ -155,7 +149,7 @@ if boundary is not None:
 Model(
     dem=dem,
     rainfall=rainfall,
-    duration=3600*duration+3600*post_event_duration,
+    duration=total_duration,
     output_interval=600,
     open_external_boundaries=open_boundaries,
     buildings=buildings,
