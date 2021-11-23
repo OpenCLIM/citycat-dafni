@@ -266,8 +266,12 @@ if green_areas is not None and len(green_areas) > 0:
 description += f'The boundaries of the domain were set to {"open" if open_boundaries else "closed"}.'
 
 if roof_storage > 0:
-    description += ' There was {roof_storage}m of roof storage.'
+    description += f' There was {roof_storage}m of roof storage.'
     title += f' storage={roof_storage}m'
+
+if discharge is not None:
+    description += f' A flow of {discharge} cumecs was used as a boundary condition.'
+    title += f' discharge={discharge}m3/s'
 
 geojson = json.dumps({
     'type': 'Feature',
