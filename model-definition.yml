@@ -92,6 +92,13 @@ spec:
         min: 0.1
         max: 10000
 
+      - name: OUTPUT_INTERVAL
+        title: Output Interval
+        description: Time between depth and velocity outputs (s)
+        type: integer
+        default: 600
+        required: true
+
       - name: X
         title: Domain Centroid X (OSGB)
         description: The X coordinate of the domain centroid in OSGB

@@ -41,6 +41,7 @@ open_boundaries = (os.getenv('OPEN_BOUNDARIES').lower() == 'true')
 permeable_areas = os.getenv('PERMEABLE_AREAS')
 roof_storage = float(os.getenv('ROOF_STORAGE'))
 discharge = float(os.getenv('DISCHARGE'))
+output_interval = int(os.getenv('OUTPUT_INTERVAL'))
 
 nodata = -9999
 
@@ -150,7 +151,7 @@ Model(
     dem=dem,
     rainfall=rainfall,
     duration=total_duration,
-    output_interval=600,
+    output_interval=output_interval,
     open_external_boundaries=open_boundaries,
     buildings=buildings,
     green_areas=green_areas,
