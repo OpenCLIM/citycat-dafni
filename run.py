@@ -40,7 +40,7 @@ y = int(os.getenv('Y'))
 open_boundaries = (os.getenv('OPEN_BOUNDARIES').lower() == 'true')
 permeable_areas = os.getenv('PERMEABLE_AREAS')
 roof_storage = float(os.getenv('ROOF_STORAGE'))
-discharge = float(os.getenv('DISCHARGE'))
+discharge_parameter = float(os.getenv('DISCHARGE'))
 output_interval = int(os.getenv('OUTPUT_INTERVAL'))
 
 nodata = -9999
@@ -120,8 +120,8 @@ green_areas = read_geometries('green_areas', bbox=bounds)
 total_duration = 3600*duration+3600*post_event_duration
 
 # Create discharge timeseries
-if discharge > 0:
-    discharge = pd.Series([discharge, discharge], index=[0, total_duration])
+if discharge_parameter > 0:
+    discharge = pd.Series([discharge_parameter, discharge_parameter], index=[0, total_duration])
 
     # Divide by the length of each cell
     discharge = discharge.divide(5)
@@ -271,8 +271,8 @@ if roof_storage > 0:
     title += f' storage={roof_storage}m'
 
 if discharge is not None:
-    description += f' A flow of {discharge} cumecs was used as a boundary condition.'
-    title += f' discharge={discharge}m3/s'
+    description += f' A flow of {discharge_parameter} cumecs was used as a boundary condition.'
+    title += f' {discharge_parameter}m3/s'
 
 geojson = json.dumps({
     'type': 'Feature',
