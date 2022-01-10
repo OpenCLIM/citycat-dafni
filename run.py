@@ -28,6 +28,7 @@ if not os.path.exists(outputs_path):
     os.mkdir(outputs_path)
 
 # Read environment variables
+name = os.getenv('NAME')
 rainfall_mode = os.getenv('RAINFALL_MODE')
 time_horizon = os.getenv('TIME_HORIZON')
 rainfall_total = int(os.getenv('TOTAL_DEPTH'))
@@ -240,7 +241,7 @@ with rio.open(geotiff_path) as ds:
     with rio.open(os.path.join(run_path, 'max_depth_interpolated.tif'), 'w', **ds.profile) as dst:
         dst.write(fillnodata(ds.read(1), mask=ds.read_masks(1)), 1)
 
-title = f'CityCAT Output {x},{y} {size/1000}km {duration}hr'
+title = f'{name} {x},{y} {size/1000}km {duration}hr'
 description = f'A {size/1000}x{size/1000}km domain centred at {x},{y} was simulated for ' \
               f'{duration+post_event_duration}hrs, which took ' \
               f'{round((end_timestamp-start_timestamp).total_seconds()/3600, 1)}hrs to complete. '

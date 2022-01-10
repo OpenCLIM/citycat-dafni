@@ -15,6 +15,13 @@ metadata:
 spec:
   inputs:
     parameters:
+      - name: NAME
+        title: Run name
+        type: string
+        description: Name for the run, used in the title field of the metadata file
+        default: CityCAT Output
+        retuired: true
+
       - name: RAINFALL_MODE
         title: Rainfall mode
         type: string
