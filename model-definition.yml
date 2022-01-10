@@ -20,7 +20,7 @@ spec:
         type: string
         description: Name for the run, used in the title field of the metadata file
         default: CityCAT Output
-        retuired: true
+        required: true
 
       - name: RAINFALL_MODE
         title: Rainfall mode
