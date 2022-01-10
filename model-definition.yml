@@ -184,14 +184,14 @@ spec:
 
       - name: Boundary
         description: Boundary used to clip DEM
-        path: inputs/dem
+        path: inputs/boundary
         required: false
 
       - name: Future Drainage
         description: Set of CSV files containing gridded uplifts based on UKCP18 from the FUTURE-DRAINAGE project
         default:
           - 0f7733d1-f6f3-44c4-b27e-9eecf6773e34
-        path: inputs/boundary
+        path: inputs/future-drainage
         required: false
 
       - name: Buildings
