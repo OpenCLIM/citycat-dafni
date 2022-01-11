@@ -316,5 +316,5 @@ metadata = f"""{{
   "geojson": {geojson}
 }}
 """
-with open(os.path.join(outputs_path, 'metadata.json'), 'w') as f:
+with open(os.path.join(run_path, 'metadata.json'), 'w') as f:
     f.write(metadata)

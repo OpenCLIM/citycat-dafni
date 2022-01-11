@@ -219,6 +219,6 @@ spec:
         type: folder
         description: path to model outputs
 
-      - name: outputs/metadata.json
+      - name: outputs/run/metadata.json
         type: JSON
         description: NID metadata for outputs
