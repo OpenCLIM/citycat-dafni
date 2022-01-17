@@ -7,25 +7,32 @@ metadata:
   summary: CityCAT is a tool for modelling, analysis and visualisation of surface water flooding.
   source_code: https://github.com/OpenCLIM/citycat-dafni
   description: >
-    CityCAT (City Catchment Analysis Tool) is a unique software tool for modelling, analysis and visualisation of
-    surface water flooding. CityCAT enables rapid assessment of combined pluvial and fluvial flood risk and allows
-    assessment of the effects of different flood alleviation measures.
-
-    When used in return period mode, rainfall events are extracted from the UKCP19 baseline period 1980-2000.
+    CityCAT (City Catchment Analysis Tool) is a unique software tool for modelling, analysis and visualisation of surface water flooding.
+    CityCAT enables rapid assessment of combined pluvial and fluvial flood risk and allows assessment of the effects of different flood alleviation measures.
+    This DAFNI model generates input data for CityCAT, runs a simulation and then converts the output data.
+    The domain is generated either using a boundary polygon or a combination of centroid location and size.
+    A rainfall total can either specified or extracted from FUTURE-DRAINAGE based on a return period, duration and time horizon.
+    The storm profile is generated using the FEH summer profile.
+    The effects of buildings, green areas and inflow boundary conditions can be included.
+    Results are provided in a range of formats and a metadata JSON file is created which can be used to create DAFNI datasets.
 spec:
   inputs:
     parameters:
       - name: NAME
         title: Run name
         type: string
-        description: Name for the run, used in the title field of the metadata file
+        description: Name for the run, used in the title field of the metadata file.
         default: CityCAT Output
         required: true
 
       - name: RAINFALL_MODE
         title: Rainfall mode
         type: string
-        description: Generate events using return period or total depth
+        description:
+          If `RAINFALL_MODE` is set to "return_period" then the rainfall depth corresponding to the `DURATION` and `RETURN_PERIOD` are extracted from the relevant CSV file in the `future-drainage` dataslot.
+          If the `TIME_HORIZON` is anything other than "baseline", the rainfall depth is then uplifted by the percentage given in the CSV file.
+          If `RAINFALL_MODE` is set to "total_depth" then the `TOTAL_DEPTH` parameter is used to define the amount of rainfall and the `RETURN_PERIOD` and `TIME_HORIZON` parameters are ignored.
+          The rainfall depth value, either directly provided or extracted from FUTURE-DRAINAGE, is used to generate a storm profile in combination with the summer profile and `DURATION` parameter.
         default: return_period
         required: true
         options:
@@ -36,7 +43,11 @@ spec:
 
       - name: RETURN_PERIOD
         title: Return Period (years)
-        description: The return period of the rainfall event
+        description:
+          The return period of the rainfall event.
+          This parameter is only used if `RAINFALL_MODE` is set to "return_period".
+          If this is provided, then data must be present in the `future-drainage` dataslot.
+          This return period is used to extract a rainfall depth from the FUTURE-DRAINAGE dataset and select the percentage uplift if required.
         type: string
         default: '100'
         required: false
@@ -56,7 +67,9 @@ spec:
 
       - name: TOTAL_DEPTH
         title: Total depth (mm)
-        description: The total depth of rainfall during the event
+        description:
+          The total depth of rainfall during the event.
+          This parameter is only used if `RAINFALL_MODE` is set to "total_depth".
         type: number
         default: 40
         required: false
@@ -65,7 +78,11 @@ spec:
 
       - name: DURATION
         title: Duration (hours)
-        description: The duration of the rainfall event
+        description:
+          The duration of the rainfall event.
+          This value is used in combination with the rainfall depth and summer profile to generate a storm profile.
+          If `RAINFALL_MODE` is "return_period", this value is also used to extract a rainfall depth from FUTURE-DRAINAGE.
+          Only specific values are available as there is a limited number of durations within FUTURE-DRAINAGE.
         type: string
         default: '1'
         required: true
@@ -83,7 +100,10 @@ spec:
 
       - name: POST_EVENT_DURATION
         title: Post-event Duration (hours)
-        description: The duration of the dry period following the rainfall event
+        description:
+          The duration of the dry period following the rainfall event.
+          After the rainfall event ends, CityCAT will continue to run for this period of time.
+          This is to allow water to continue propogating and accumulating on the floodplain.
         type: number
         required: true
         default: 0
@@ -92,7 +112,9 @@ spec:
 
       - name: SIZE
         title: Domain Size (km)
-        description: The width and height of the domain to create
+        description:
+          The width and height of the domain to create, centered at the location specified by `X` and `Y`.
+          This value is only used if no data is available in the `boundary` dataslot.
         type: number
         default: 6
         required: true
@@ -100,29 +122,38 @@ spec:
         max: 10000
 
       - name: OUTPUT_INTERVAL
-        title: Output Interval
-        description: Time between depth and velocity outputs (s)
+        title: Output Interval (seconds)
+        description:
+          Time between depth and velocity outputs (s).
+          Decreasing this value will lead to a higher number of output files.
+
         type: integer
         default: 600
         required: true
 
       - name: X
         title: Domain Centroid X (OSGB)
-        description: The X coordinate of the domain centroid in OSGB
+        description:
+          The X coordinate of the domain centroid in OSGB.
+          This value is only used if no data is available in the `boundary` dataslot.
         type: integer
         default: 258722
         required: true
 
       - name: Y
         title: Domain Centroid Y (OSGB)
-        description: The Y coordinate of the domain centroid in OSGB
+        description:
+          The Y coordinate of the domain centroid in OSGB.
+          This value is only used if no data is available in the `boundary` dataslot.
         type: integer
         default: 665028
         required: true
 
       - name: OPEN_BOUNDARIES
         title: Open Boundaries
-        description: Whether to set boundaries as open
+        description:
+          If `OPEN_BOUNDARIES` is "True", water will be allowed to leave the domain at the edges.
+          If it is "False", water will bounce back from the edges of the domain and cannot leave.
         type: boolean
         default: True
         required: true
@@ -130,7 +161,9 @@ spec:
       - name: PERMEABLE_AREAS
         title: Permeable areas
         type: string
-        description: Use green areas polygons or assume everywhere is permeable or impermeable
+        description:
+          If `PERMEABLE_AREAS` is set to "polygons", polygons from the `green_areas` dataslot are used to define areas which are permeable.
+          Otherwise, all cells are treated as being "permeable" or "impermeable", depending on the selection.
         default: polygons
         required: true
         options:
@@ -143,7 +176,9 @@ spec:
 
       - name: ROOF_STORAGE
         title: Roof storage
-        description: Depth of water that can be stored on rooftops (m)
+        description:
+          Depth of water that can be stored on rooftops (m).
+          This value is uniformly applied to all buildings.
         type: number
         default: 0
         required: true
@@ -152,7 +187,9 @@ spec:
 
       - name: TIME_HORIZON
         title: Time horizon
-        description: The time horizon to use when selecting rainfall uplifts, baseline indicates no uplift
+        description:
+          The time horizon to use when selecting rainfall uplifts, baseline indicates no uplift.
+          This is used in combination with the `RETURN_PERIOD` and `DURATION` to select a rainfall depth from FUTURE-DRAINAGE.
         type: string
         default: '2070'
         required: false
@@ -166,7 +203,10 @@ spec:
 
       - name: DISCHARGE
         title: Discharge (m3/s)
-        description: Value of discharge boundary condition, if provided then the flow polygons dataslot is required
+        description:
+          Value of discharge boundary condition, if provided then the `flow_polygons` dataslot is required.
+          Discharge is distributed uniformly over the `DURATION` and gets multiplied by the number of cell boundaries intersected by the polygons in the `flow_polygons` dataslot.
+          Therefore, it is normally advisable to divide the total desired discharge by the number of overlapping cell boundaries.
         type: number
         default: 0
         required: true
@@ -176,40 +216,61 @@ spec:
 
     dataslots:
       - name: Digital Elevation Model
-        description: Digital Elevation Model
+        description:
+          The default DEM dataset is OS Terrain 5, a corrected digital surface model of the UK with 5m resolution.
+          The dataset was created using a combination of photogrammetry and topographic survey and is updated regularly.
+          This data is licenced for research only.
         default:
           - 859e810c-4597-44b6-8d92-a9f00e45dcbd
         path: inputs/dem
         required: true
 
       - name: Boundary
-        description: Boundary used to clip DEM
+        description:
+          A polygon can be provided to define the domain in GeoPackage or Shapefile format.
+          If this is provided, the X, Y and SIZE parameters will be ignored.
         path: inputs/boundary
         required: false
 
       - name: Future Drainage
-        description: Set of CSV files containing gridded uplifts based on UKCP18 from the FUTURE-DRAINAGE project
+        description:
+          Rainfall depths for a range of return periods, durations and time periods are provided by FUTURE-DRAINAGE.
+          The estimates are based on 2.2 km hourly precipitation data from UKCP18 for RCP 8.5.
+          Baseline rainfall depths are provided describing the period 1981-2000 in the ReturnLevel.<year> field.
+          Percentage uplifts are available for two future horizons, 2050 and 2070.
+          The values are provided for points on a 5km grid covering the UK.
         default:
           - 0f7733d1-f6f3-44c4-b27e-9eecf6773e34
         path: inputs/future-drainage
         required: false
 
       - name: Buildings
-        description: Buildings
+        description:
+          Polygons from OS MasterMap are used to represent buildings and green spaces.
+          MasterMap is the most comprehensive is the most detailed and up-to-date view of Britain’s landscape.
+          This data is licenced for research only.
+          Optionally, future buildings generated by UDM can be provided and combined with the buildings from OS MasterMap.
+          Cells within building polygons are removed from the domain.
         default:
           - 7f0344d8-079c-41ce-828e-9caadc431628
         path: inputs/buildings
         required: false
 
       - name: Green areas
-        description: Green areas
+        description:
+          Green areas can be provided as polygons in GeoPackage or Shapefile format.
+          Infiltration is allowed at cells within green areas polygons.
         default:
           - 22601187-67c5-4cbd-927f-0d5d38fe9dbe
         path: inputs/green_areas
         required: false
 
       - name: Flow Polygons
-        description: Polygons used to define where discharge will enter the domain
+        description:
+          Optionally, discharge can be provided as an input parameter and used as a boundary condition.
+          If discharge is provided, then a file containing a polygon that overlaps with domain cell boundaries is required.
+          Discharge is routed onto the domain at these overlapping cell boundaries.
+          The discharge is distributed uniformly over the specified duration and gets multiplied by the number of cells boundaries intersected.
         path: inputs/flow_polygons
         required: false
 
@@ -217,8 +278,14 @@ spec:
     datasets:
       - name: outputs/run/**/*
         type: folder
-        description: path to model outputs
+        description:
+          The CityCAT model outputs four GeoTIFF files describing maximum depth, maximum depth with gaps interpolated, maximum velocity and maximum velocity-depth product.
+          The maximum depth is also plotted in a PNG file (Figure 1).
+          The depths and velocities from all timesteps are stored in a netCDF file and archived to a ZIP file.
 
       - name: outputs/run/metadata.json
         type: JSON
-        description: NID metadata for outputs
+        description:
+          NID metadata for outputs.
+          This file can be used for creating datasets on DAFNI.
+          All active parameters are included in this file.

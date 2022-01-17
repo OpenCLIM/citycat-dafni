@@ -2,80 +2,26 @@
 
 [![build](https://github.com/OpenCLIM/citycat-dafni/workflows/build/badge.svg)](https://github.com/OpenCLIM/citycat-dafni/actions)
 
-## Features
-- [Uplift return period rainfall depth based on UKCP18](#return-periods)
-- [Fit storm profile to rainfall event](#storm-profile)
-- [Extract domain from asc files](#dem)
-- [Extract buildings and green areas from gpkg and shp files](#buildings-green-areas)
-- [Input discharge from a SHETran simulation](#shetran)
-- Create archive of results
-- Create GeoTIFF of max depth, max velocity and max depth velocity product
-- Create netCDF of depths and velocities at all time steps
-- [Interpolate depths to fill building gaps](#interpolate)
-- [Create PNG map of max depth](#png)
-- Create metadata JSON file
+This repo contains the files required to build and test the citycat-dafni model.
+The binary executable for CityCAT is encrypted as this software is not publicly available.
+[`Wine`](https://www.winehq.org/) is used to run the executable as it was built for Windows but is required to run on Linux.
+All processing steps are contained in [`run.py`](https://github.com/OpenCLIM/citycat-dafni/blob/master/run.py).
 
-## Parameters
-The following parameters must be provided as environment variables (in uppercase and with spaces replaced by underscores). 
-See [model-definition.yml](https://github.com/OpenCLIM/citycat-dafni/blob/master/model-definition.yml) for further details.
-- Rainfall mode
-- Return period
-- Time horizon
-- Total depth
-- Duration
-- Post-event duration
-- Size
-- X
-- Y
-- Open boundaries
-- Permeable areas
-- Roof storage
-- Discharge
+## Documentation
+[citycat-dafni.md](https://github.com/OpenCLIM/citycat-dafni/blob/master/docs/citycat-dafni.md)
 
-## Dataslots
-Data is made available to the model at the following paths. The spatial projection of all datasets is assumed to be 
-British National Grid. 
-- inputs/dem
-- inputs/future-drainage
-- inputs/buildings
-- inputs/green_areas
-- inputs/flow_polygons
+To build the documentation:
+```
+cd docs
+python build_docs.py
+```
+
+## Dependencies
+[environment.yml](https://github.com/OpenCLIM/citycat-dafni/blob/master/environment.yml)
 
 ## Usage 
 `docker build -t citycat-dafni . && docker run -v $PWD/data:/data --env PYTHONUNBUFFERED=1 --env RAINFALL_MODE=return_period --env SIZE=0.1 --env DURATION=1 --env POST_EVENT_DURATION=0 --env TOTAL_DEPTH=40 --env RETURN_PERIOD=100 --env X=258722 --env Y=665028 --env OPEN_BOUNDARIES=True --env PERMEABLE_AREAS=polygons --env ROOF_STORAGE=0 --env TIME_HORIZON=2050 --name citycat-dafni-return-period citycat-dafni`
 
-## <a name="return-periods">Uplift return period rainfall depth based on UKCP18</a>
-If `RAINFALL_MODE` is set to "return period" then the rainfall depth corresponding to the `DURATION` and `RETURN_PERIOD`
-are extracted from the relevant CSV file in the `future-drainage` dataslot.
-If the `TIME_HORIZON` is anything other than `baseline`, the rainfall depth is then uplifted by the percentage given
-in the CSV file.
+or
 
-## <a name="storm-profile">Fit storm profile to rainfall event</a>
-A storm profile is fitted to the rainfall total using the `DURATION` of the event and a static unit profile.
-The unit profile is scaled so that its total depth matches the rainfall total for the event.
-
-## <a name="dem">Extract domain from asc files</a>
-Rasterio is used to merge and crop all asc files in the `dem` dataslot using a boundary defined by `X`, `Y` and `SIZE`.
-A nodata value of -9999 is set as this is required by CityCAT.
-
-## <a name="buildings-green-areas">Extract buildings and green areas from gpkg and shp files</a>
-All shp and gpkg files in the `buildings` and `green_areas` dataslots are merged and clipped to the domain boundary 
-using geopandas. Cells within building polygons are removed from the domain and infiltration is allowed at cells within 
-green areas polygons.
-
-## <a name="shetran">Input discharge boundary condition</a>
-If the `DISCHARGE` parameter is greater than zero, a CityCAT input file will be created which adds a boundary condition
-to the simulation, corresponding to the total amount of discharge. A file must be present in the `flow_polygons` 
-dataslot, containing the areas within which discharge will enter the domain. The discharge is magnified in CityCAT by 
-the number of cell boundaries that fall within the flow polygons, so it is  necessary to only encompass a single 
-boundary, or to divide the discharge value by the number of cell boundaries covered.
-
-## <a name="interpolate">Interpolate depths to fill building gaps</a>
-The gaps in the domain created where buildings exist are filled using inverse distance weighting and a new GeoTIFF is created.
-This was carried out to allow point geometries to be used when calculating impacts.
-If the original results are used without interpolation, then there is likely to be missing data at asset locations.
-
-## <a name="png">Create PNG map of max depth</a>
-Rasterio is used to create a 1280 x 960 pixel map of maximum depth.
-This image is intended to enable quick interpretation of results but it may not always provide a good visualisation as 
-the colour scale has a maximum value of 1m.
+`python run.py`
