@@ -250,6 +250,7 @@ spec:
         description:
           Buildings can be provided as polygons in GeoPackage or Shapefile format.
           Cells which fall within buildings are removed from the domain.
+          Water is prevented from flowing into these removed areas using closed cell boundary conditions.
           By default, OS MasterMap is used to represent buildings.
           MasterMap is the most detailed and up-to-date view of Britain’s landscape.
           This data is licenced for research only.
@@ -265,6 +266,7 @@ spec:
           Green areas can be provided as polygons in GeoPackage or Shapefile format.
           Infiltration is allowed at cells within green areas polygons.
           By default, OS MasterMap is used to represent green spaces.
+          If `PERMEABLE_AREAS` is set to anything other than "polygons", this data is not used.
         default:
           - 22601187-67c5-4cbd-927f-0d5d38fe9dbe
         path: inputs/green_areas
