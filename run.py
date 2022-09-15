@@ -27,11 +27,19 @@ import logging
 from pathlib import Path
 from os.path import isfile, join, isdir
 
+# Set up paths
+data_path = os.getenv('DATA_PATH', '/data')
+inputs_path = os.path.join(data_path, 'inputs')
+outputs_path = os.path.join(data_path, 'outputs')
+if not os.path.exists(outputs_path):
+    os.mkdir(outputs_path)
+
+
 # Set up log file
 logger = logging.getLogger('citycat-dafni')
 logger.setLevel(logging.INFO)
 log_file_name = 'citycat-dafni-%s.log' %(''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6)))
-fh = logging.FileHandler( Path(join(data_path, output_dir)) / log_file_name)
+fh = logging.FileHandler( Path(join(data_path, outputs_path)) / log_file_name)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 fh.setFormatter(formatter)
 logger.addHandler(fh)
@@ -39,13 +47,7 @@ logger.addHandler(fh)
 logger.info('Log file established!')
 logger.info('--------')
 
-# Set up paths
-logger.info('Setting up paths')
-data_path = os.getenv('DATA_PATH', '/data')
-inputs_path = os.path.join(data_path, 'inputs')
-outputs_path = os.path.join(data_path, 'outputs')
-if not os.path.exists(outputs_path):
-    os.mkdir(outputs_path)
+logger.info('Paths have been setup')
 
 # Read environment variables
 logger.info('Setting up environment variables')
