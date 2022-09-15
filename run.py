@@ -21,6 +21,23 @@ from shapely.geometry import box
 import json
 from matplotlib.colors import ListedColormap
 
+import logging
+
+
+# Set up log file
+logger = logging.getLogger('citycat-dafni')
+logger.setLevel(logging.INFO)
+log_file_name = 'citycat-dafni-%s.log' %(''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6)))
+fh = logging.FileHandler( Path(join(data_path, output_dir)) / log_file_name)
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+fh.setFormatter(formatter)
+logger.addHandler(fh)
+
+logger.info('Log file established!')
+logger.info('--------')
+
+# Set up paths
+logger.info('Setting up paths')
 data_path = os.getenv('DATA_PATH', '/data')
 inputs_path = os.path.join(data_path, 'inputs')
 outputs_path = os.path.join(data_path, 'outputs')
@@ -28,6 +45,7 @@ if not os.path.exists(outputs_path):
     os.mkdir(outputs_path)
 
 # Read environment variables
+logger.info('Setting up environment variables')
 name = os.getenv('NAME')
 rainfall_mode = os.getenv('RAINFALL_MODE')
 time_horizon = os.getenv('TIME_HORIZON')
@@ -48,16 +66,23 @@ nodata = -9999
 
 
 def read_geometries(path, bbox=None):
+    logger.info('---- In read geometries function')
     paths = glob(os.path.join(inputs_path, path, '*.gpkg'))
     paths.extend(glob(os.path.join(inputs_path, path, '*.shp')))
     print(f'Files in {path} directory: {[os.path.basename(p) for p in paths]}')
+    logger.info(f'---- Files in {path} directory to read in: {[os.path.basename(p) for p in paths]}')
     geometries = gpd.read_file(paths[0], bbox=bbox) if len(paths) > 0 else None
     if len(paths) > 1:
         for path in paths[1:]:
             geometries = geometries.append(gpd.read_file(path, bbox=bounds))
+    logger.info('---- Size of geometries %s' %len(geometries))
+    logger.info('---- Completed read geometries')
     return geometries
 
+logger.info('--------')
+logger.info('Starting to run code')
 
+logger.info('Setting boundary')
 boundary = read_geometries('boundary')
 
 if boundary is None:
@@ -65,6 +90,7 @@ if boundary is None:
 else:
     bounds = boundary.geometry.total_bounds.tolist()
 
+logger.info('Checking if rainfall period being used')
 if rainfall_mode == 'return_period':
     uplifts = pd.read_csv(
         os.path.join(inputs_path,
@@ -86,12 +112,14 @@ if rainfall_mode == 'return_period':
 
         rainfall_total *= float(((100 + row['Uplift_50']) / 100))
 
+logging.info(f'Rainfall Total: {rainfall_total}')
 print(f'Rainfall Total: {rainfall_total}')
 
 unit_profile = np.array([0.017627993, 0.027784045, 0.041248418, 0.064500665, 0.100127555, 0.145482534, 0.20645758,
                          0.145482534, 0.100127555, 0.064500665, 0.041248418, 0.027784045, 0.017627993])
 
 # Fit storm profile
+logger.info('Fitting rainfall to sotrm profile')
 rainfall_times = np.linspace(start=0, stop=duration*3600, num=len(unit_profile))
 
 unit_total = sum((unit_profile + np.append(unit_profile[1:], [0])) / 2 *
@@ -101,11 +129,13 @@ rainfall = pd.DataFrame(list(unit_profile*rainfall_total/unit_total/1000) + [0, 
                         index=list(rainfall_times) + [duration*3600+1, duration*3600+2])
 
 # Create run directory
+logging.info('Creating run directory')
 run_path = os.path.join(outputs_path, 'run')
 if not os.path.exists(run_path):
     os.mkdir(run_path)
 
 # Read and clip DEM
+logger.info('Reading and clipping DEM')
 dem_path = os.path.join(inputs_path, 'dem')
 dem_datasets = [rio.open(os.path.join(dem_path, os.path.abspath(p))) for p in glob(os.path.join(dem_path, '*.asc'))]
 
@@ -113,14 +143,17 @@ array, transform = merge(dem_datasets, bounds=bounds, precision=50, nodata=nodat
 assert array[array != nodata].size > 0, "No DEM data available for selected location"
 
 # Read buildings
+logger.info('Reading buildings')
 buildings = read_geometries('buildings', bbox=bounds)
 
 # Read green areas
+logger.info('Reading green areas')
 green_areas = read_geometries('green_areas', bbox=bounds)
 
 total_duration = 3600*duration+3600*post_event_duration
 
 # Create discharge timeseries
+logger.info('Creating discharge timeseries')
 if discharge_parameter > 0:
     discharge = pd.Series([discharge_parameter, discharge_parameter], index=[0, total_duration])
 
@@ -132,7 +165,7 @@ else:
     discharge = None
     flow_polygons = None
 
-
+logger.info('Creating DEM dataset and boundary dataset')
 dem = MemoryFile()
 with dem.open(driver='GTiff', transform=transform, width=array.shape[1], height=array.shape[2], count=1,
               dtype=rio.float32, nodata=nodata) as dataset:
@@ -148,6 +181,7 @@ if boundary is not None:
         dataset.write(array)
 
 # Create input files
+logger.info('Creating input files')
 Model(
     dem=dem,
     rainfall=rainfall,
@@ -165,11 +199,13 @@ Model(
 ).write(run_path)
 
 # Copy executable
+logger.info('Preparing CityCat')
 shutil.copy('citycat.exe', run_path)
 
 start_timestamp = pd.Timestamp.now()
 
 # Run executable
+logger.info('Running CityCat......')
 if os.name == 'nt':
     subprocess.call('cd {run_path} & citycat.exe -r 1 -c 1'.format(run_path=run_path), shell=True)
 else:
@@ -177,14 +213,19 @@ else:
 
 end_timestamp = pd.Timestamp.now()
 
+logger.info('....CityCat completed!')
+
 # Delete executable
+logger.info('Deleting CityCAT model')
 os.remove(os.path.join(run_path, 'citycat.exe'))
 
 # Archive results files
+logger.info('Archiving results')
 surface_maps = os.path.join(run_path, 'R1C1_SurfaceMaps')
 shutil.make_archive(surface_maps, 'zip', surface_maps)
 
 # Create geotiff
+logger.info('Creating outputs')
 geotiff_path = os.path.join(run_path, 'max_depth.tif')
 netcdf_path = os.path.join(run_path, 'R1C1_SurfaceMaps.nc')
 
@@ -280,7 +321,9 @@ geojson = json.dumps({
     'properties': {},
     'geometry': gpd.GeoSeries(box(*bounds), crs='EPSG:27700').to_crs(epsg=4326).iloc[0].__geo_interface__})
 print(title)
+
 # Create metadata file
+logger.info('Building metadata file for DAFNI')
 metadata = f"""{{
   "@context": ["metadata-v1"],
   "@type": "dcat:Dataset",
