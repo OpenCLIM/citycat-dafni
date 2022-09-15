@@ -21,6 +21,8 @@ from shapely.geometry import box
 import json
 from matplotlib.colors import ListedColormap
 
+import random
+import string
 import logging
 
 
