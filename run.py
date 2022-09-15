@@ -25,7 +25,7 @@ import random
 import string
 import logging
 from pathlib import Path
-
+from os.path import isfile, join, isdir
 
 # Set up log file
 logger = logging.getLogger('citycat-dafni')
