@@ -24,6 +24,7 @@ from matplotlib.colors import ListedColormap
 import random
 import string
 import logging
+from pathlib import Path
 
 
 # Set up log file
