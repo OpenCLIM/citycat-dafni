@@ -79,9 +79,10 @@ def read_geometries(path, bbox=None):
     geometries = gpd.read_file(paths[0], bbox=bbox) if len(paths) > 0 else None
     if len(paths) > 1:
         for path in paths[1:]:
+            logger.info('-------- Reading in %s' %path)
             geometries = geometries.append(gpd.read_file(path, bbox=bounds))
-    logger.info('---- Size of geometries %s' %len(geometries))
-    logger.info('---- Completed read geometries')
+
+    logger.info('---- Completed read geometries funtion')
     return geometries
 
 logger.info('--------')
