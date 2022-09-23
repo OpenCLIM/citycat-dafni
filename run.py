@@ -20,7 +20,7 @@ import numpy as np
 from shapely.geometry import box
 import json
 from matplotlib.colors import ListedColormap
-import shutil
+from zipfile import ZipFile
 
 import random
 import string
