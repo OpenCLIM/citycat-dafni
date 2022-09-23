@@ -76,12 +76,18 @@ def read_geometries(path, bbox=None):
     paths.extend(glob(os.path.join(inputs_path, path, '*.shp')))
     print(f'Files in {path} directory: {[os.path.basename(p) for p in paths]}')
     logger.info(f'---- Files in {path} directory to read in: {[os.path.basename(p) for p in paths]}')
-    geometries = gpd.read_file(paths[0], bbox=bbox) if len(paths) > 0 else None
+    
+    if len(paths) > 0:
+        logger.info('-------- Reading in %s' %path)
+        geometries = gpd.read_file(paths[0], bbox=bbox)
+        logger.info('-------- Number of features read now: %s' %geometries.shape[0])
+              
     if len(paths) > 1:
         for path in paths[1:]:
             logger.info('-------- Reading in %s' %path)
             geometries = geometries.append(gpd.read_file(path, bbox=bounds))
-
+            logger.info('-------- Number of features read now: %s' %geometries.shape[0])
+            
     logger.info('---- Completed read geometries funtion')
     return geometries
 
