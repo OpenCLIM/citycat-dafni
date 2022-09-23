@@ -20,6 +20,7 @@ import numpy as np
 from shapely.geometry import box
 import json
 from matplotlib.colors import ListedColormap
+from zipfile import ZipFile
 
 import random
 import string
@@ -33,6 +34,25 @@ inputs_path = os.path.join(data_path, 'inputs')
 outputs_path = os.path.join(data_path, 'outputs')
 if not os.path.exists(outputs_path):
     os.mkdir(outputs_path)
+    
+    
+# If the UDM model preceeds the CityCat model in the workflow, a zip file should appear in the inputs folder
+# Check if the zip file exists
+if os.path.exists(inputs_path + r"\urban_fabric.zip") :
+    with ZipFile(inputs_path + r"\urban_fabric.zip" , 'r') as zip: 
+        # extract the files into the inputs directory
+        zip.extractall(inputs_path)
+    # Create, if needed, the folder structure
+    inputs_buildings_path=os.path.join(inputs_path,'buildings')
+    if not os.path.exists(inputs_buildings_path):
+        os.mkdir(inputs_buildings_path)
+    inputs_greenspaces_path=os.path.join(inputs_path,'green_areas')
+    if not os.path.exists(inputs_greenspaces_path):
+        os.mkdir(inputs_greenspaces_path)
+    # Move the relevent files into the correct folders
+    shutil.move(inputs_path + r'\src\buildings.gpkg', inputs_buildings_path)
+    shutil.move(inputs_path + r'\src\greenspace.gpkg', inputs_greenspaces_path)
+    zip.close()
 
 
 # Set up log file
