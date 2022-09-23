@@ -52,7 +52,7 @@ if os.path.exists(inputs_path + r"\urban_fabric.zip") :
     # Move the relevent files into the correct folders
     shutil.move(inputs_path + r'\src\buildings.gpkg', inputs_buildings_path)
     shutil.move(inputs_path + r'\src\greenspace.gpkg', inputs_greenspaces_path)
-zip.close()
+    zip.close()
 
 
 # Set up log file
