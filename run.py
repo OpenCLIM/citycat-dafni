@@ -34,26 +34,6 @@ inputs_path = os.path.join(data_path, 'inputs')
 outputs_path = os.path.join(data_path, 'outputs')
 if not os.path.exists(outputs_path):
     os.mkdir(outputs_path)
-    
-    
-# If the UDM model preceeds the CityCat model in the workflow, a zip file should appear in the inputs folder
-# Check if the zip file exists
-if os.path.exists(inputs_path + r"\urban_fabric.zip") :
-    with ZipFile(inputs_path + r"\urban_fabric.zip" , 'r') as zip: 
-        # extract the files into the inputs directory
-        zip.extractall(inputs_path)
-    # Create, if needed, the folder structure
-    inputs_buildings_path=os.path.join(inputs_path,'buildings')
-    if not os.path.exists(inputs_buildings_path):
-        os.mkdir(inputs_buildings_path)
-    inputs_greenspaces_path=os.path.join(inputs_path,'green_areas')
-    if not os.path.exists(inputs_greenspaces_path):
-        os.mkdir(inputs_greenspaces_path)
-    # Move the relevent files into the correct folders
-    shutil.move(inputs_path + r'\src\buildings.gpkg', inputs_buildings_path)
-    shutil.move(inputs_path + r'\src\greenspace.gpkg', inputs_greenspaces_path)
-    zip.close()
-
 
 # Set up log file
 logger = logging.getLogger('citycat-dafni')
@@ -62,12 +42,37 @@ log_file_name = 'citycat-dafni-%s.log' %(''.join(random.choice(string.ascii_uppe
 fh = logging.FileHandler( Path(join(data_path, outputs_path)) / log_file_name)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 fh.setFormatter(formatter)
-logger.addHandler(fh)
+logger.addHandler(fh)vi
 
 logger.info('Log file established!')
 logger.info('--------')
 
-logger.info('Paths have been setup')
+logger.info('Paths have been setup')    
+    
+# If the UDM model preceeds the CityCat model in the workflow, a zip file should appear in the inputs folder
+# Check if the zip file exists
+archive = glob(inputs_path + "/**/*.zip", recursive = True)
+logger.info(archive)
+
+if os.path.exists(join(inputs_path,'urban_fabric.zip')) :
+    logger.info('---- Found urban fabric layer from UDM')
+    with ZipFile(join(inputs_path,'urban_fabric.zip' , 'r') as zip: 
+        # extract the files into the inputs directory
+        zip.extractall(inputs_path)
+    logger.info('---- Extracted urban fabric layers')
+    # Create, if needed, the folder structure
+    inputs_buildings_path=os.path.join(inputs_path,'buildings')
+    if not os.path.exists(inputs_buildings_path):
+        os.mkdir(inputs_buildings_path)
+    inputs_greenspaces_path=os.path.join(inputs_path,'green_areas')
+    if not os.path.exists(inputs_greenspaces_path):
+        os.mkdir(inputs_greenspaces_path)
+    # Move the relevent files into the correct folders
+    shutil.move(join(inputs_path,'src','buildings.gpkg'), join(inputs_buildings_path,'buildings_usm.gpkg'))
+    shutil.move(join(inputs_path,'src','greenspace.gpkg'), join(inputs_greenspaces_path,'greenspace_udm.gpkg'))
+    logger.info('---- Moved urban fabric files')
+    zip.close()
+
 
 # Read environment variables
 logger.info('Setting up environment variables')
