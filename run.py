@@ -56,7 +56,7 @@ logger.info(archive)
 
 if os.path.exists(join(inputs_path,'urban_fabric.zip')) :
     logger.info('---- Found urban fabric layer from UDM')
-    with ZipFile(join(inputs_path,'urban_fabric.zip' , 'r') as zip: 
+    with ZipFile(join(inputs_path,'urban_fabric.zip') , 'r') as zip: 
         # extract the files into the inputs directory
         zip.extractall(inputs_path)
     logger.info('---- Extracted urban fabric layers')
