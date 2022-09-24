@@ -42,7 +42,7 @@ log_file_name = 'citycat-dafni-%s.log' %(''.join(random.choice(string.ascii_uppe
 fh = logging.FileHandler( Path(join(data_path, outputs_path)) / log_file_name)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 fh.setFormatter(formatter)
-logger.addHandler(fh)vi
+logger.addHandler(fh)
 
 logger.info('Log file established!')
 logger.info('--------')
