@@ -1,0 +1,34 @@
+<?xml version="1.0" ?>
+<CityCatConfiguration>
+	<NumericalScheme>
+		<Scheme>6</Scheme>
+		<FluxLimiterFunction>1</FluxLimiterFunction>
+		<SlopeLimiterFunction>4</SlopeLimiterFunction>
+	</NumericalScheme>
+	<SimulationRunTime units="secs">288000</SimulationRunTime>
+	<OutputFrequency units="secs">5</OutputFrequency>
+	<InitialDt units="secs">25</InitialDt>
+	<RainfallData spatial="False" zones="1"/>
+	<RoofStorage units="meters">23.0</RoofStorage>
+	<FrictionCoefficients>
+		<CoeffForImpermeableAreas>0.02</CoeffForImpermeableAreas>
+		<CoeffForPermeableAreas>0.035</CoeffForPermeableAreas>
+	</FrictionCoefficients>
+	<Infiltration model="GreenAmpt" useInfitration="True">
+		<InfiltrationParams soilId="1">
+			<HydrConductivity units="cm/hr">1.09</HydrConductivity>
+			<WettingFrontSuctionHead units="cm">11.01</WettingFrontSuctionHead>
+			<EffectivePorosity>0.412</EffectivePorosity>
+			<EffectiveSaturation>0.3</EffectiveSaturation>
+		</InfiltrationParams>
+	</Infiltration>
+	<PermeableAreas>0</PermeableAreas>
+	<InitSurfaceWaterElevation set="False" spatial="False">0.00</InitSurfaceWaterElevation>
+	<CreateMaxDepthFile fileformat="csv">True</CreateMaxDepthFile>
+	<SubsurfaceNetwork useNetworkModel="False">
+		<MaxDx units="meters">0.50</MaxDx>
+		<SaveDischarge>False</SaveDischarge>
+	</SubsurfaceNetwork>
+	<OpenExternalBoundaries>False</OpenExternalBoundaries>
+	<BuildingsAlgorithm>1</BuildingsAlgorithm>
+</CityCatConfiguration>

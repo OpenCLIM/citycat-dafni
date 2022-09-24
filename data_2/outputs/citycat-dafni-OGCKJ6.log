@@ -1,0 +1,36 @@
+2022-09-24 09:06:06,250 - INFO - Log file established!
+2022-09-24 09:06:06,250 - INFO - --------
+2022-09-24 09:06:06,250 - INFO - Paths have been setup
+2022-09-24 09:06:06,251 - INFO - ['/data/inputs/urban_fabric.zip']
+2022-09-24 09:06:06,251 - INFO - Setting up environment variables
+2022-09-24 09:06:06,251 - INFO - --------
+2022-09-24 09:06:06,251 - INFO - Starting to run code
+2022-09-24 09:06:06,251 - INFO - Setting boundary
+2022-09-24 09:06:06,251 - INFO - ---- In read geometries function
+2022-09-24 09:06:06,252 - INFO - ---- Files in boundary directory to read in: ['boundary.gpkg']
+2022-09-24 09:06:06,252 - INFO - -------- Reading in boundary
+2022-09-24 09:06:06,287 - INFO - -------- Number of features read now: 1
+2022-09-24 09:06:06,287 - INFO - ---- Completed read geometries funtion
+2022-09-24 09:06:06,287 - INFO - Checking if rainfall period being used
+2022-09-24 09:06:06,288 - INFO - Fitting rainfall to sotrm profile
+2022-09-24 09:06:06,288 - INFO - Reading and clipping DEM
+2022-09-24 09:06:06,466 - INFO - Reading buildings
+2022-09-24 09:06:06,467 - INFO - ---- In read geometries function
+2022-09-24 09:06:06,467 - INFO - ---- Files in buildings directory to read in: ['buildings.gpkg', 'norwich.gpkg', 'norwich.shp']
+2022-09-24 09:06:06,467 - INFO - -------- Reading in buildings
+2022-09-24 09:06:06,488 - INFO - -------- Number of features read now: 1
+2022-09-24 09:06:06,488 - INFO - -------- Reading in /data/inputs/buildings/norwich.gpkg
+2022-09-24 09:06:06,498 - INFO - -------- Number of features read now: 1
+2022-09-24 09:06:06,498 - INFO - -------- Reading in /data/inputs/buildings/norwich.shp
+2022-09-24 09:06:06,505 - INFO - -------- Number of features read now: 1
+2022-09-24 09:06:06,505 - INFO - ---- Completed read geometries funtion
+2022-09-24 09:06:06,505 - INFO - Reading green areas
+2022-09-24 09:06:06,505 - INFO - ---- In read geometries function
+2022-09-24 09:06:06,506 - INFO - ---- Files in green_areas directory to read in: ['green_areas.gpkg']
+2022-09-24 09:06:06,506 - INFO - -------- Reading in green_areas
+2022-09-24 09:06:06,526 - INFO - -------- Number of features read now: 0
+2022-09-24 09:06:06,526 - INFO - ---- Completed read geometries funtion
+2022-09-24 09:06:06,527 - INFO - Creating discharge timeseries
+2022-09-24 09:06:06,546 - INFO - Creating DEM dataset and boundary dataset
+2022-09-24 09:06:06,552 - INFO - Creating input files
+2022-09-24 09:06:06,565 - INFO - Preparing CityCat

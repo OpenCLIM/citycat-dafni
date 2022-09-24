@@ -1,0 +1,41 @@
+2022-09-24 09:57:51,111 - INFO - Log file established!
+2022-09-24 09:57:51,111 - INFO - --------
+2022-09-24 09:57:51,111 - INFO - Paths have been setup
+2022-09-24 09:57:51,112 - INFO - ['/data/inputs/urban_fabric.zip']
+2022-09-24 09:57:51,112 - INFO - ---- Found urban fabric layer from UDM
+2022-09-24 09:57:51,128 - INFO - ---- Extracted urban fabric layers
+2022-09-24 09:57:51,130 - INFO - ---- Moved urban fabric files
+2022-09-24 09:57:51,130 - INFO - Setting up environment variables
+2022-09-24 09:57:51,130 - INFO - --------
+2022-09-24 09:57:51,130 - INFO - Starting to run code
+2022-09-24 09:57:51,130 - INFO - Setting boundary
+2022-09-24 09:57:51,130 - INFO - ---- In read geometries function
+2022-09-24 09:57:51,131 - INFO - ---- Files in boundary directory to read in: ['boundary.gpkg']
+2022-09-24 09:57:51,131 - INFO - -------- Reading in boundary
+2022-09-24 09:57:51,166 - INFO - -------- Number of features read now: 1
+2022-09-24 09:57:51,166 - INFO - ---- Completed read geometries funtion
+2022-09-24 09:57:51,167 - INFO - Checking if rainfall period being used
+2022-09-24 09:57:51,167 - INFO - Fitting rainfall to sotrm profile
+2022-09-24 09:57:51,168 - INFO - Reading and clipping DEM
+2022-09-24 09:57:51,352 - INFO - Reading buildings
+2022-09-24 09:57:51,352 - INFO - ---- In read geometries function
+2022-09-24 09:57:51,352 - INFO - ---- Files in buildings directory to read in: ['buildings.gpkg', 'buildings_udm.gpkg', 'norwich.gpkg', 'norwich.shp']
+2022-09-24 09:57:51,353 - INFO - -------- Reading in buildings
+2022-09-24 09:57:51,373 - INFO - -------- Number of features read now: 1
+2022-09-24 09:57:51,373 - INFO - -------- Reading in /data/inputs/buildings/buildings_udm.gpkg
+2022-09-24 09:57:51,382 - INFO - -------- Number of features read now: 1
+2022-09-24 09:57:51,382 - INFO - -------- Reading in /data/inputs/buildings/norwich.gpkg
+2022-09-24 09:57:51,391 - INFO - -------- Number of features read now: 1
+2022-09-24 09:57:51,391 - INFO - -------- Reading in /data/inputs/buildings/norwich.shp
+2022-09-24 09:57:51,397 - INFO - -------- Number of features read now: 1
+2022-09-24 09:57:51,397 - INFO - ---- Completed read geometries funtion
+2022-09-24 09:57:51,397 - INFO - Reading green areas
+2022-09-24 09:57:51,397 - INFO - ---- In read geometries function
+2022-09-24 09:57:51,398 - INFO - ---- Files in green_areas directory to read in: ['green_areas.gpkg']
+2022-09-24 09:57:51,398 - INFO - -------- Reading in green_areas
+2022-09-24 09:57:51,418 - INFO - -------- Number of features read now: 0
+2022-09-24 09:57:51,419 - INFO - ---- Completed read geometries funtion
+2022-09-24 09:57:51,419 - INFO - Creating discharge timeseries
+2022-09-24 09:57:51,439 - INFO - Creating DEM dataset and boundary dataset
+2022-09-24 09:57:51,447 - INFO - Creating input files
+2022-09-24 09:57:51,458 - INFO - Preparing CityCat

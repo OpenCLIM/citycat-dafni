@@ -1,0 +1,26 @@
+2022-09-23 19:11:00,793 - INFO - Log file established!
+2022-09-23 19:11:00,794 - INFO - --------
+2022-09-23 19:11:00,794 - INFO - Paths have been setup
+2022-09-23 19:11:00,794 - INFO - Setting up environment variables
+2022-09-23 19:11:00,794 - INFO - --------
+2022-09-23 19:11:00,794 - INFO - Starting to run code
+2022-09-23 19:11:00,794 - INFO - Setting boundary
+2022-09-23 19:11:00,794 - INFO - ---- In read geometries function
+2022-09-23 19:11:00,794 - INFO - ---- Files in boundary directory to read in: ['boundary.gpkg']
+2022-09-23 19:11:00,828 - INFO - ---- Completed read geometries funtion
+2022-09-23 19:11:00,828 - INFO - Checking if rainfall period being used
+2022-09-23 19:11:00,828 - INFO - Fitting rainfall to sotrm profile
+2022-09-23 19:11:00,829 - INFO - Reading and clipping DEM
+2022-09-23 19:11:01,013 - INFO - Reading buildings
+2022-09-23 19:11:01,013 - INFO - ---- In read geometries function
+2022-09-23 19:11:01,014 - INFO - ---- Files in buildings directory to read in: ['buildings.gpkg', 'norwich.gpkg']
+2022-09-23 19:11:01,032 - INFO - -------- Reading in /data/inputs/buildings/norwich.gpkg
+2022-09-23 19:11:01,042 - INFO - ---- Completed read geometries funtion
+2022-09-23 19:11:01,042 - INFO - Reading green areas
+2022-09-23 19:11:01,042 - INFO - ---- In read geometries function
+2022-09-23 19:11:01,042 - INFO - ---- Files in green_areas directory to read in: ['green_areas.gpkg']
+2022-09-23 19:11:01,062 - INFO - ---- Completed read geometries funtion
+2022-09-23 19:11:01,062 - INFO - Creating discharge timeseries
+2022-09-23 19:11:01,082 - INFO - Creating DEM dataset and boundary dataset
+2022-09-23 19:11:01,088 - INFO - Creating input files
+2022-09-23 19:11:01,098 - INFO - Preparing CityCat

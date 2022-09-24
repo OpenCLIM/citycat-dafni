@@ -1,0 +1,21 @@
+2022-09-23 19:21:28,503 - INFO - Log file established!
+2022-09-23 19:21:28,503 - INFO - --------
+2022-09-23 19:21:28,503 - INFO - Paths have been setup
+2022-09-23 19:21:28,503 - INFO - Setting up environment variables
+2022-09-23 19:21:28,503 - INFO - --------
+2022-09-23 19:21:28,503 - INFO - Starting to run code
+2022-09-23 19:21:28,503 - INFO - Setting boundary
+2022-09-23 19:21:28,503 - INFO - ---- In read geometries function
+2022-09-23 19:21:28,504 - INFO - ---- Files in boundary directory to read in: ['boundary.gpkg']
+2022-09-23 19:21:28,553 - INFO - ---- Read in 1 features
+2022-09-23 19:21:28,622 - INFO - ---- Completed read geometries funtion
+2022-09-23 19:21:28,623 - INFO - Checking if rainfall period being used
+2022-09-23 19:21:28,623 - INFO - Fitting rainfall to sotrm profile
+2022-09-23 19:21:28,624 - INFO - Reading and clipping DEM
+2022-09-23 19:21:28,958 - INFO - Reading buildings
+2022-09-23 19:21:28,958 - INFO - ---- In read geometries function
+2022-09-23 19:21:28,958 - INFO - ---- Files in buildings directory to read in: ['buildings.gpkg', 'norwich.gpkg', 'norwich.shp']
+2022-09-23 19:21:28,987 - INFO - -------- Reading in /data/inputs/buildings/buildings.gpkg
+2022-09-23 19:21:32,943 - INFO - -------- Reading in /data/inputs/buildings/norwich.gpkg
+2022-09-23 19:21:43,976 - INFO - -------- Reading in /data/inputs/buildings/norwich.shp
+2022-09-23 19:21:53,170 - INFO - ---- Read in 171751 features
