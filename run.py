@@ -102,6 +102,9 @@ def read_geometries(path, bbox=None):
     print(f'Files in {path} directory: {[os.path.basename(p) for p in paths]}')
     logger.info(f'---- Files in {path} directory to read in: {[os.path.basename(p) for p in paths]}')
     
+    # set a default value
+    geometries = None
+    
     if len(paths) > 0:
         logger.info('-------- Reading in %s' %path)
         geometries = gpd.read_file(paths[0], bbox=bbox)
