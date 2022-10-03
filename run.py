@@ -58,27 +58,27 @@ matches = []
 for match in archive:
     if "urban_fabric" in match:
         matches.append(match)
-print(matches)
 logger.info(matches)
 
-if os.path.exists(matches) :
-    logger.info('---- Found urban fabric layer from UDM')
-    with ZipFile(join(inputs_path,'/data/urban_fabric.zip') , 'r') as zip: 
-        # extract the files into the inputs directory
-        zip.extractall(inputs_path)
-    logger.info('---- Extracted urban fabric layers')
-    # Create, if needed, the folder structure
-    inputs_buildings_path=os.path.join(inputs_path,'buildings')
-    if not os.path.exists(inputs_buildings_path):
-        os.mkdir(inputs_buildings_path)
-    inputs_greenspaces_path=os.path.join(inputs_path,'green_areas')
-    if not os.path.exists(inputs_greenspaces_path):
-        os.mkdir(inputs_greenspaces_path)
-    # Move the relevent files into the correct folders
-    shutil.move(join(inputs_path,'src','buildings.gpkg'), join(inputs_buildings_path,'buildings_usm.gpkg'))
-    shutil.move(join(inputs_path,'src','greenspace.gpkg'), join(inputs_greenspaces_path,'greenspace_udm.gpkg'))
-    logger.info('---- Moved urban fabric files')
-    zip.close()
+if len(matches) ==1 :
+    if os.path.exists(matches[0]) :
+        logger.info('---- Found urban fabric layer from UDM')
+        with ZipFile(join(inputs_path,'/data/urban_fabric.zip') , 'r') as zip: 
+            # extract the files into the inputs directory
+            zip.extractall(inputs_path)
+        logger.info('---- Extracted urban fabric layers')
+        # Create, if needed, the folder structure
+        inputs_buildings_path=os.path.join(inputs_path,'buildings')
+        if not os.path.exists(inputs_buildings_path):
+            os.mkdir(inputs_buildings_path)
+        inputs_greenspaces_path=os.path.join(inputs_path,'green_areas')
+        if not os.path.exists(inputs_greenspaces_path):
+            os.mkdir(inputs_greenspaces_path)
+        # Move the relevent files into the correct folders
+        shutil.move(join(inputs_path,'src','buildings.gpkg'), join(inputs_buildings_path,'buildings_usm.gpkg'))
+        shutil.move(join(inputs_path,'src','greenspace.gpkg'), join(inputs_greenspaces_path,'greenspace_udm.gpkg'))
+        logger.info('---- Moved urban fabric files')
+        zip.close()
 
 
 # Read environment variables
