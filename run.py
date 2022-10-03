@@ -51,10 +51,16 @@ logger.info('Paths have been setup')
     
 # If the UDM model preceeds the CityCat model in the workflow, a zip file should appear in the inputs folder
 # Check if the zip file exists
-archive = glob(inputs_path + "/**/*.zip", recursive = True)
+archive = glob.glob(data_path+"/**/*.zip")
 logger.info(archive)
 
-if os.path.exists(join(inputs_path,'/data/urban_fabric.zip')) :
+matches = []
+for match in archive:
+    if "urban_fabric" in match:
+        matches.append(match)
+logger.info(matches)
+
+if os.path.exists(matches[0]) :
     logger.info('---- Found urban fabric layer from UDM')
     with ZipFile(join(inputs_path,'/data/urban_fabric.zip') , 'r') as zip: 
         # extract the files into the inputs directory
