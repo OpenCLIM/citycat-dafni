@@ -58,9 +58,10 @@ matches = []
 for match in archive:
     if "urban_fabric" in match:
         matches.append(match)
+print(matches)
 logger.info(matches)
 
-if os.path.exists(matches[0]) :
+if os.path.exists(matches) :
     logger.info('---- Found urban fabric layer from UDM')
     with ZipFile(join(inputs_path,'/data/urban_fabric.zip') , 'r') as zip: 
         # extract the files into the inputs directory
