@@ -51,7 +51,7 @@ logger.info('Paths have been setup')
     
 # If the UDM model preceeds the CityCat model in the workflow, a zip file should appear in the inputs folder
 # Check if the zip file exists
-archive = glob.glob(data_path+"/**/*.zip")
+archive = glob(inputs_path + "/**/*.zip", recursive = True)
 logger.info(archive)
 
 matches = []
