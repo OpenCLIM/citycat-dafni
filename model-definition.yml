@@ -225,7 +225,7 @@ spec:
         default:
           - 859e810c-4597-44b6-8d92-a9f00e45dcbd
         path: inputs/dem
-        required: true
+        required: false
 
       - name: Boundary
         description:
