@@ -24,7 +24,7 @@ spec:
         type: string
         description: Name for the run, used in the title field of the metadata file.
         default: CityCAT Output
-        required: true
+        required: false
 
       - name: RAINFALL_MODE
         title: Rainfall mode
@@ -35,7 +35,7 @@ spec:
           If `RAINFALL_MODE` is set to "total_depth" then the `TOTAL_DEPTH` parameter is used to define the amount of rainfall and the `RETURN_PERIOD` and `TIME_HORIZON` parameters are ignored.
           The rainfall depth value, either directly provided or extracted from FUTURE-DRAINAGE, is used to generate a storm profile in combination with the summer profile and `DURATION` parameter.
         default: return_period
-        required: true
+        required: false
         options:
           - name: return_period
             title: Return Periods
@@ -86,7 +86,7 @@ spec:
           Only specific values are available as there is a limited number of durations within FUTURE-DRAINAGE.
         type: string
         default: '1'
-        required: true
+        required: false
         options:
           - name: '1'
             title: '1'
@@ -106,7 +106,7 @@ spec:
           After the rainfall event ends, CityCAT will continue to run for this period of time.
           This is to allow water to continue propogating and accumulating on the floodplain.
         type: number
-        required: true
+        required: false
         default: 0
         min: 0
         max: 10
@@ -118,7 +118,7 @@ spec:
           This value is only used if no data is available in the `boundary` dataslot.
         type: number
         default: 6
-        required: true
+        required: false
         min: 0.1
         max: 10000
 
@@ -130,7 +130,7 @@ spec:
 
         type: integer
         default: 600
-        required: true
+        required: false
 
       - name: X
         title: Domain Centroid X (OSGB)
@@ -139,7 +139,7 @@ spec:
           This value is only used if no data is available in the `boundary` dataslot.
         type: integer
         default: 258722
-        required: true
+        required: false
 
       - name: Y
         title: Domain Centroid Y (OSGB)
@@ -148,7 +148,7 @@ spec:
           This value is only used if no data is available in the `boundary` dataslot.
         type: integer
         default: 665028
-        required: true
+        required: false
 
       - name: OPEN_BOUNDARIES
         title: Open Boundaries
@@ -157,7 +157,7 @@ spec:
           If it is "False", water will bounce back from the edges of the domain and cannot leave.
         type: boolean
         default: True
-        required: true
+        required: false
 
       - name: PERMEABLE_AREAS
         title: Permeable areas
@@ -166,7 +166,7 @@ spec:
           If `PERMEABLE_AREAS` is set to "polygons", polygons from the `green_areas` dataslot are used to define areas which are permeable.
           Otherwise, all cells are treated as being "permeable" or "impermeable", depending on the selection.
         default: polygons
-        required: true
+        required: false
         options:
           - name: polygons
             title: Polygons
@@ -182,7 +182,7 @@ spec:
           This value is uniformly applied to all buildings.
         type: number
         default: 0
-        required: true
+        required: false
         min: 0
         max: 10
 
@@ -210,7 +210,7 @@ spec:
           Therefore, it is normally advisable to divide the total desired discharge by the number of overlapping cell boundaries.
         type: number
         default: 0
-        required: true
+        required: false
         min: 0
         max: 1000
 
