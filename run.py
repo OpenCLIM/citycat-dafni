@@ -34,6 +34,9 @@ inputs_path = os.path.join(data_path, 'inputs')
 outputs_path = os.path.join(data_path, 'outputs')
 if not os.path.exists(outputs_path):
     os.mkdir(outputs_path)
+    
+parameters_path = os.path.join(inputs_path, 'parameters')
+print('parameters_path:',parameters_path)
 
 # Set up log file
 logger = logging.getLogger('citycat-dafni')
@@ -80,24 +83,53 @@ if len(matches) ==1 :
         logger.info('---- Moved urban fabric files')
         zip.close()
 
+# Look to see if a parameter file has been added
+parameter_file = glob(parameters_path + "/*.csv", recursive = True)
+print('parameter_file:', parameter_file)
 
-# Read environment variables
-logger.info('Setting up environment variables')
-name = os.getenv('NAME')
-rainfall_mode = os.getenv('RAINFALL_MODE')
-time_horizon = os.getenv('TIME_HORIZON')
-rainfall_total = int(os.getenv('TOTAL_DEPTH'))
-size = float(os.getenv('SIZE')) * 1000  # convert from km to m
-duration = int(os.getenv('DURATION'))
-post_event_duration = int(os.getenv('POST_EVENT_DURATION'))
-return_period = int(os.getenv('RETURN_PERIOD'))
-x = int(os.getenv('X'))
-y = int(os.getenv('Y'))
-open_boundaries = (os.getenv('OPEN_BOUNDARIES').lower() == 'true')
-permeable_areas = os.getenv('PERMEABLE_AREAS')
-roof_storage = float(os.getenv('ROOF_STORAGE'))
-discharge_parameter = float(os.getenv('DISCHARGE'))
-output_interval = int(os.getenv('OUTPUT_INTERVAL'))
+# If a parameter.csv is available: read the variables from the document
+if len(parameter_file) == 1 :
+    file_path = os.path.splitext(parameter_file[0])
+    print('Filepath:',file_path)
+    filename=file_path[0].split("/")
+    print('Filename:',filename[-1])
+
+    parameters = pd.read_csv(os.path.join(parameters_path + '/' + filename[-1] + '.csv'))
+
+    name = filename[-1]
+    name = name.replace('-parameters','')
+    rainfall_mode = parameters.loc[3][1]
+    time_horizon = parameters.loc[4][1]
+    rainfall_total = parameters.loc[5][1]
+    size = parameters.loc[6][1]
+    duration = parameters.loc[7][1]
+    post_event_duration = parameters.loc[8][1]
+    return_period = parameters.loc[9][1]
+    x = parameters.loc[10][1]
+    y = parameters.loc[11][1]
+    open_boundaries = parameters.loc[12][1]
+    permeable_areas = parameters.loc[13][1]
+    roof_storage = parameters.loc[14][1]
+    discharge_parameter = parameters.loc[15][1]
+    output_interval = parameters.loc[16][1]
+
+# If no parameter file is available, the user needs to define the parameters
+if len(parameter_file) == 0 :
+    name = os.getenv('NAME')
+    rainfall_mode = os.getenv('RAINFALL_MODE')
+    time_horizon = os.getenv('TIME_HORIZON')
+    rainfall_total = int(os.getenv('TOTAL_DEPTH'))
+    size = float(os.getenv('SIZE')) * 1000  # convert from km to m
+    duration = int(os.getenv('DURATION'))
+    post_event_duration = int(os.getenv('POST_EVENT_DURATION'))
+    return_period = int(os.getenv('RETURN_PERIOD'))
+    x = int(os.getenv('X'))
+    y = int(os.getenv('Y'))
+    open_boundaries = (os.getenv('OPEN_BOUNDARIES').lower() == 'true')
+    permeable_areas = os.getenv('PERMEABLE_AREAS')
+    roof_storage = float(os.getenv('ROOF_STORAGE'))
+    discharge_parameter = float(os.getenv('DISCHARGE'))
+    output_interval = int(os.getenv('OUTPUT_INTERVAL'))
 
 nodata = -9999
 
