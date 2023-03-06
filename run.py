@@ -100,18 +100,18 @@ if len(parameter_file) == 1 :
     name = name.replace('-parameters','')
     rainfall_mode = parameters.loc[3][1]
     time_horizon = parameters.loc[4][1]
-    rainfall_total = parameters.loc[5][1]
+    rainfall_total = int(parameters.loc[5][1])
     size = parameters.loc[6][1]
-    duration = parameters.loc[7][1]
-    post_event_duration = parameters.loc[8][1]
-    return_period = parameters.loc[9][1]
+    duration = int(parameters.loc[7][1])
+    post_event_duration = int(parameters.loc[8][1])
+    return_period = int(parameters.loc[9][1])
     x = int(parameters.loc[10][1])
     y = int(parameters.loc[11][1])
-    open_boundaries = parameters.loc[12][1]
+    open_boundaries = parameters.loc[12][1].lower() == 'true'
     permeable_areas = parameters.loc[13][1]
-    roof_storage = parameters.loc[14][1]
-    discharge_parameter = parameters.loc[15][1]
-    output_interval = parameters.loc[16][1]
+    roof_storage = float(parameters.loc[14][1])
+    discharge_parameter = float(parameters.loc[15][1])
+    output_interval = int(parameters.loc[16][1])
 
 # If no parameter file is available, the user needs to define the parameters
 if len(parameter_file) == 0 :
