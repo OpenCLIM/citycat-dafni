@@ -105,8 +105,8 @@ if len(parameter_file) == 1 :
     duration = parameters.loc[7][1]
     post_event_duration = parameters.loc[8][1]
     return_period = parameters.loc[9][1]
-    x = parameters.loc[10][1]
-    y = parameters.loc[11][1]
+    x = int(parameters.loc[10][1])
+    y = int(parameters.loc[11][1])
     open_boundaries = parameters.loc[12][1]
     permeable_areas = parameters.loc[13][1]
     roof_storage = parameters.loc[14][1]
