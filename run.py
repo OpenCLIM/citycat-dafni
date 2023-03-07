@@ -57,32 +57,6 @@ logger.info('Paths have been setup')
 archive = glob(inputs_path + "/**/*.zip", recursive = True)
 logger.info(archive)
 
-matches = []
-for match in archive:
-    if "urban_fabric" in match:
-        matches.append(match)
-logger.info(matches)
-
-if len(matches) ==1 :
-    if os.path.exists(matches[0]) :
-        logger.info('---- Found urban fabric layer from UDM')
-        with ZipFile(matches[0], 'r') as zip: 
-            # extract the files into the inputs directory
-            zip.extractall(inputs_path)
-        logger.info('---- Extracted urban fabric layers')
-        # Create, if needed, the folder structure
-        inputs_buildings_path=os.path.join(inputs_path,'buildings')
-        if not os.path.exists(inputs_buildings_path):
-            os.mkdir(inputs_buildings_path)
-        inputs_greenspaces_path=os.path.join(inputs_path,'green_areas')
-        if not os.path.exists(inputs_greenspaces_path):
-            os.mkdir(inputs_greenspaces_path)
-        # Move the relevent files into the correct folders
-        shutil.move(join(inputs_path,'src','buildings.gpkg'), join(inputs_buildings_path,'buildings_usm.gpkg'))
-        shutil.move(join(inputs_path,'src','greenspace.gpkg'), join(inputs_greenspaces_path,'greenspace_udm.gpkg'))
-        logger.info('---- Moved urban fabric files')
-        zip.close()
-
 # Look to see if a parameter file has been added
 parameter_file = glob(parameters_path + "/*.csv", recursive = True)
 print('parameter_file:', parameter_file)
@@ -101,13 +75,13 @@ if len(parameter_file) == 1 :
     rainfall_mode = parameters.loc[3][1]
     time_horizon = parameters.loc[4][1]
     rainfall_total = int(parameters.loc[5][1])
-    size = parameters.loc[6][1]
+    size = float(parameters.loc[6][1])
     duration = int(parameters.loc[7][1])
     post_event_duration = int(parameters.loc[8][1])
     return_period = int(parameters.loc[9][1])
     x = int(parameters.loc[10][1])
     y = int(parameters.loc[11][1])
-    open_boundaries = parameters.loc[12][1].lower() == 'true'
+    open_boundaries = parameters.loc[12][1]
     permeable_areas = parameters.loc[13][1]
     roof_storage = float(parameters.loc[14][1])
     discharge_parameter = float(parameters.loc[15][1])
