@@ -82,6 +82,10 @@ if len(parameter_file) == 1 :
     x = int(parameters.loc[10][1])
     y = int(parameters.loc[11][1])
     open_boundaries = parameters.loc[12][1]
+    if open_boundaries.lower()=='true':
+        open_boundaries=True
+    else :
+        open_boundaries=False
     permeable_areas = parameters.loc[13][1]
     roof_storage = float(parameters.loc[14][1])
     discharge_parameter = float(parameters.loc[15][1])
