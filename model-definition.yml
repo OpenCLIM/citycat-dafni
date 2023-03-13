@@ -23,7 +23,6 @@ spec:
         title: Run name
         type: string
         description: Name for the run, used in the title field of the metadata file.
-        default: CityCAT Output
         required: false
 
       - name: RAINFALL_MODE
@@ -34,7 +33,7 @@ spec:
           If the `TIME_HORIZON` is anything other than "baseline", the rainfall depth is then uplifted by the percentage given in the CSV file.
           If `RAINFALL_MODE` is set to "total_depth" then the `TOTAL_DEPTH` parameter is used to define the amount of rainfall and the `RETURN_PERIOD` and `TIME_HORIZON` parameters are ignored.
           The rainfall depth value, either directly provided or extracted from FUTURE-DRAINAGE, is used to generate a storm profile in combination with the summer profile and `DURATION` parameter.
-        default: return_period
+        default: total_depth
         required: false
         options:
           - name: return_period
@@ -50,7 +49,6 @@ spec:
           If this is provided, then data must be present in the `future-drainage` dataslot.
           This return period is used to extract a rainfall depth from the FUTURE-DRAINAGE dataset and select the percentage uplift if required.
         type: string
-        default: '100'
         required: false
         options:
           - name: '2'
@@ -72,7 +70,6 @@ spec:
           The total depth of rainfall during the event.
           This parameter is only used if `RAINFALL_MODE` is set to "total_depth".
         type: number
-        default: 40
         required: false
         min: 10
         max: 100
@@ -85,7 +82,6 @@ spec:
           If `RAINFALL_MODE` is "return_period", this value is also used to extract a rainfall depth from FUTURE-DRAINAGE.
           Only specific values are available as there is a limited number of durations within FUTURE-DRAINAGE.
         type: string
-        default: '1'
         required: false
         options:
           - name: '1'
@@ -107,7 +103,6 @@ spec:
           This is to allow water to continue propogating and accumulating on the floodplain.
         type: number
         required: false
-        default: 0
         min: 0
         max: 10
 
@@ -117,7 +112,6 @@ spec:
           The width and height of the domain to create, centered at the location specified by `X` and `Y`.
           This value is only used if no data is available in the `boundary` dataslot.
         type: number
-        default: 6
         required: false
         min: 0.1
         max: 10000
@@ -127,9 +121,7 @@ spec:
         description:
           Time between depth and velocity outputs (s).
           Decreasing this value will lead to a higher number of output files.
-
         type: integer
-        default: 600
         required: false
 
       - name: X
@@ -138,7 +130,6 @@ spec:
           The X coordinate of the domain centroid in OSGB.
           This value is only used if no data is available in the `boundary` dataslot.
         type: integer
-        default: 258722
         required: false
 
       - name: Y
@@ -156,7 +147,6 @@ spec:
           If `OPEN_BOUNDARIES` is "True", water will be allowed to leave the domain at the edges.
           If it is "False", water will bounce back from the edges of the domain and cannot leave.
         type: boolean
-        default: True
         required: false
 
       - name: PERMEABLE_AREAS
@@ -165,7 +155,6 @@ spec:
         description:
           If `PERMEABLE_AREAS` is set to "polygons", polygons from the `green_areas` dataslot are used to define areas which are permeable.
           Otherwise, all cells are treated as being "permeable" or "impermeable", depending on the selection.
-        default: polygons
         required: false
         options:
           - name: polygons
@@ -181,7 +170,6 @@ spec:
           Depth of water that can be stored on rooftops (m).
           This value is uniformly applied to all buildings.
         type: number
-        default: 0
         required: false
         min: 0
         max: 10
@@ -192,7 +180,6 @@ spec:
           The time horizon to use when selecting rainfall uplifts, baseline indicates no uplift.
           This is used in combination with the `RETURN_PERIOD` and `DURATION` to select a rainfall depth from FUTURE-DRAINAGE.
         type: string
-        default: '2070'
         required: false
         options:
           - name: '2070'
@@ -209,7 +196,6 @@ spec:
           Discharge is distributed uniformly over the `DURATION` and gets multiplied by the number of cell boundaries intersected by the polygons in the `flow_polygons` dataslot.
           Therefore, it is normally advisable to divide the total desired discharge by the number of overlapping cell boundaries.
         type: number
-        default: 0
         required: false
         min: 0
         max: 1000
