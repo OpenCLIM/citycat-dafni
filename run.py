@@ -229,13 +229,13 @@ with dem.open(driver='GTiff', transform=transform, width=array.shape[1], height=
     bounds = dataset.bounds
     dataset.write(array)
 
-if boundary is not None:
-    array, transform = mask(dem.open(), boundary.geometry, crop=True)
-    dem = MemoryFile()
-    with dem.open(driver='GTiff', transform=transform, width=array.shape[1], height=array.shape[2], count=1,
-                  dtype=rio.float32, nodata=nodata) as dataset:
-        bounds = dataset.bounds
-        dataset.write(array)
+# if boundary is not None:
+#     array, transform = mask(dem.open(), boundary.geometry, crop=True)
+#     dem = MemoryFile()
+#     with dem.open(driver='GTiff', transform=transform, width=array.shape[1], height=array.shape[2], count=1,
+#                   dtype=rio.float32, nodata=nodata) as dataset:
+#         bounds = dataset.bounds
+#         dataset.write(array)
 
 # Create input files
 logger.info('Creating input files')
