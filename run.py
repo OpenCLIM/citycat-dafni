@@ -224,7 +224,7 @@ else:
 
 logger.info('Creating DEM dataset and boundary dataset')
 dem = MemoryFile()
-with dem.open(driver='GTiff', transform=transform, width=array.shape[1], height=array.shape[2], count=1,
+with dem.open(driver='GTiff', transform=transform, width=array.shape[2], height=array.shape[1], count=1,
               dtype=rio.float32, nodata=nodata) as dataset:
     bounds = dataset.bounds
     dataset.write(array)
@@ -232,7 +232,7 @@ with dem.open(driver='GTiff', transform=transform, width=array.shape[1], height=
 # if boundary is not None:
 #     array, transform = mask(dem.open(), boundary.geometry, crop=True)
 #     dem = MemoryFile()
-#     with dem.open(driver='GTiff', transform=transform, width=array.shape[1], height=array.shape[2], count=1,
+#     with dem.open(driver='GTiff', transform=transform, width=array.shape[2], height=array.shape[1], count=1,
 #                   dtype=rio.float32, nodata=nodata) as dataset:
 #         bounds = dataset.bounds
 #         dataset.write(array)
