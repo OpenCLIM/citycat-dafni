@@ -31,5 +31,5 @@ jobs:
           image-path: ./citycat-dafni.tar.gz
           username: ${{ secrets.DAFNI_SERVICE_ACCOUNT_USERNAME }}
           password: ${{ secrets.DAFNI_SERVICE_ACCOUNT_PASSWORD }}
-          version-message: ${{ env.TAG }}
+          version-message: "Uploaded from GitHub workflow"
           parent-model: "946a9072-bf7b-46e7-84c5-bb00ad5b88aa"
