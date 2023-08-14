@@ -21,6 +21,7 @@ from shapely.geometry import box
 import json
 from matplotlib.colors import ListedColormap
 from zipfile import ZipFile
+import matplotlib as mpl
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 from matplotlib.colors import ListedColormap
 
