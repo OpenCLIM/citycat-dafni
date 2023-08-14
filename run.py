@@ -21,6 +21,8 @@ from shapely.geometry import box
 import json
 from matplotlib.colors import ListedColormap
 from zipfile import ZipFile
+from mpl_toolkits.axes_grid1.inset_locator import inset_axes
+from matplotlib.colors import ListedColormap
 
 import random
 import string
@@ -317,25 +319,69 @@ max_vd_product.rio.set_crs('EPSG:27700')
 max_vd_product.rio.set_nodata(output.fill_value)
 max_vd_product.rio.to_raster(os.path.join(run_path, 'max_vd_product.tif'))
 
-# Create depth map
+# # Create depth map
+# with rio.open(geotiff_path) as ds:
+#     f, ax = plt.subplots()
+
+#     cmap = ListedColormap(['#f7fbff', '#deebf7', '#c6dbef', '#9ecae1', '#6baed6', '#4292c6', '#2171b5', '#08519c',
+#                            '#08306b', 'black'])
+#     cmap.set_bad(color='lightgrey')
+#     cmap.colorbar_extend = 'max'
+
+#     im = show(ds, ax=ax, cmap=cmap, vmin=0, vmax=1).get_images()[0]
+
+#     ax.set_xticks([])
+#     ax.set_yticks([])
+
+#     ax.add_artist(ScaleBar(1, frameon=False))
+#     f.colorbar(im, label='Water Depth (m)')
+#     f.savefig(os.path.join(run_path, 'max_depth.png'), dpi=200, bbox_inches='tight')
+
+# Create a depth map, with the boundary and max water levels
+
+dpi = 300
+
+#Plotting the Raster and the ShapeFile together
+fig, ax = plt.subplots(1, 1, dpi = dpi)
+cmap = mpl.cm.Blues
+
+plt.subplots_adjust(left = 0.10 , bottom = 0, right = 0.90 , top =1)
+
+#Bounds for the raster
+bounds_depth =  [0.01, 0.05, 0.10, 0.15, 0.30, 0.50, 0.80, 1.00] #you could change here the water depth of your results
+norm = mpl.colors.BoundaryNorm(bounds_depth, cmap.N)
+
+axins = inset_axes(ax,
+                   width="2%", # width of colorbar in % of plot width
+                   height="45%", # height of colorbar in % of plot height
+                   loc=2, #topright location
+                   bbox_to_anchor=(1.01, 0, 1, 1), #first number: space relative to plot (1.0 = no space between cb and plot)
+                   bbox_transform=ax.transAxes,
+                   borderpad=0) 
+
+if len(boundary) != 0:
+    boundary.boundary.plot(edgecolor = 'black', lw = 0.5, ax = ax) #lw = 0.05 -> entire area #0.2 #0.80 for zoom
+
+citycat_outputs = rio.open(geotiff_path, mode ='r')
+#The line below correspond to the raster
+show(citycat_outputs, ax = ax, title = 'max_water_depth', cmap = 'Blues', norm = norm)
+
+#Plotting the colorbar for the raster file Water Depth:
+plt.colorbar(mpl.cm.ScalarMappable(cmap = cmap, norm = norm),
+             ax = ax,
+             cax = axins,
+             extend = 'both',
+             format='%.2f',
+             ticks = bounds_depth,
+             spacing = 'uniform',
+             orientation = 'vertical',
+             label = 'Water Depth in m')
+
+plt.savefig(os.path.join(run_path, 'max_depth.png'), dpi=dpi, bbox_inches='tight')
+
+    
+# Create interpolated GeoTIFF
 with rio.open(geotiff_path) as ds:
-    f, ax = plt.subplots()
-
-    cmap = ListedColormap(['#f7fbff', '#deebf7', '#c6dbef', '#9ecae1', '#6baed6', '#4292c6', '#2171b5', '#08519c',
-                           '#08306b', 'black'])
-    cmap.set_bad(color='lightgrey')
-    cmap.colorbar_extend = 'max'
-
-    im = show(ds, ax=ax, cmap=cmap, vmin=0, vmax=1).get_images()[0]
-
-    ax.set_xticks([])
-    ax.set_yticks([])
-
-    ax.add_artist(ScaleBar(1, frameon=False))
-    f.colorbar(im, label='Water Depth (m)')
-    f.savefig(os.path.join(run_path, 'max_depth.png'), dpi=200, bbox_inches='tight')
-
-    # Create interpolated GeoTIFF
     with rio.open(os.path.join(run_path, 'max_depth_interpolated.tif'), 'w', **ds.profile) as dst:
         dst.write(fillnodata(ds.read(1), mask=ds.read_masks(1)), 1)
 
