@@ -40,6 +40,7 @@ if not os.path.exists(outputs_path):
     
 parameters_path = os.path.join(inputs_path, 'parameters')
 print('parameters_path:',parameters_path)
+udm_para_in_path = os.path.join(inputs_path, 'udm_parameters')
 
 # Set up log file
 logger = logging.getLogger('citycat-dafni')
@@ -419,6 +420,35 @@ if roof_storage > 0:
 if discharge is not None:
     description += f' A flow of {discharge_parameter} cumecs was used as a boundary condition.'
     title += f' {discharge_parameter}m3/s'
+
+udm_para_out_path = os.path.join(outputs_path, 'udm_parameters')
+if not os.path.exists(udm_para_out_path):
+    os.mkdir(udm_para_out_path)
+
+meta_data_txt = glob(udm_para_in_path + "/**/metadata.txt", recursive = True)
+meta_data_csv = glob(udm_para_in_path + "/**/metadata.csv", recursive = True)
+attractors = glob(udm_para_in_path + "/**/attractors.csv", recursive = True)
+constraints = glob(udm_para_in_path + "/**/constraints.csv", recursive = True)
+
+if len(meta_data_txt)==1:
+    src = meta_data_txt[0]
+    dst = os.path.join(udm_para_out_path,'metadata.txt')
+    shutil.copy(src,dst)
+
+if len(meta_data_csv)==1:
+    src = meta_data_csv[0]
+    dst = os.path.join(udm_para_out_path,'metadata.csv')
+    shutil.copy(src,dst)
+
+if len(attractors)==1:
+    src = attractors[0]
+    dst = os.path.join(udm_para_out_path,'attractors.csv')
+    shutil.copy(src,dst)
+
+if len(constraints)==1:
+    src = constraints[0]
+    dst = os.path.join(udm_para_out_path,'constraints.csv')
+    shutil.copy(src,dst)
 
 geojson = json.dumps({
     'type': 'Feature',
