@@ -127,6 +127,7 @@ if len(parameter_file) == 0 :
     #return_period = int(os.getenv('RETURN_PERIOD'))
     #discharge_parameter = float(os.getenv('DISCHARGE'))
 
+discharge_parameter = float(0)
 nodata = -9999
 
 
