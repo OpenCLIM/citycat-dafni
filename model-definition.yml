@@ -40,29 +40,6 @@ spec:
           #- name: total_depth
           #  title: Total depth
 
-      # - name: RETURN_PERIOD
-      #   title: Return Period (years)
-      #   description:
-      #     The return period of the rainfall event.
-      #     This parameter is only used if `RAINFALL_MODE` is set to "return_period".
-      #     If this is provided, then data must be present in the `future-drainage` dataslot.
-      #     This return period is used to extract a rainfall depth from the FUTURE-DRAINAGE dataset and select the percentage uplift if required.
-      #   type: string
-      #   required: false
-      #   options:
-      #     - name: '2'
-      #       title: '2'
-      #     - name: '5'
-      #       title: '5'
-      #     - name: '10'
-      #       title: '10'
-      #     - name: '25'
-      #       title: '25'
-      #     - name: '30'
-      #       title: '30'
-      #     - name: '100'
-      #       title: '100'
-
       - name: TOTAL_DEPTH
         title: Total depth (mm)
         description:
@@ -171,6 +148,29 @@ spec:
           This value is only used if no data is available in the `boundary` dataslot.
         type: integer
         required: false
+
+      # - name: RETURN_PERIOD
+      #   title: Return Period (years)
+      #   description:
+      #     The return period of the rainfall event.
+      #     This parameter is only used if `RAINFALL_MODE` is set to "return_period".
+      #     If this is provided, then data must be present in the `future-drainage` dataslot.
+      #     This return period is used to extract a rainfall depth from the FUTURE-DRAINAGE dataset and select the percentage uplift if required.
+      #   type: string
+      #   required: false
+      #   options:
+      #     - name: '2'
+      #       title: '2'
+      #     - name: '5'
+      #       title: '5'
+      #     - name: '10'
+      #       title: '10'
+      #     - name: '25'
+      #       title: '25'
+      #     - name: '30'
+      #       title: '30'
+      #     - name: '100'
+      #       title: '100'
 
       # - name: TIME_HORIZON
       #   title: Time horizon
