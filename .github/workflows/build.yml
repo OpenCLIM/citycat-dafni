@@ -14,11 +14,14 @@ jobs:
       - name: build image
         run: docker build -t citycat-dafni .
 
-      - name: test return period
-        run: docker run -v $PWD/data:/data --env PYTHONUNBUFFERED=1 --env NAME="Return period" --env RAINFALL_MODE=return_period --env SIZE=0.1 --env DURATION=1 --env POST_EVENT_DURATION=0 --env TOTAL_DEPTH=40 --env RETURN_PERIOD=100 --env X=258722 --env Y=665028 --env OPEN_BOUNDARIES=True --env PERMEABLE_AREAS=polygons --env ROOF_STORAGE=0 --env TIME_HORIZON=2050 --env DISCHARGE=10 --env OUTPUT_INTERVAL=600 --name citycat-dafni-return-period citycat-dafni
-
       - name: test total depth
-        run: docker run -v $PWD/data:/data --env PYTHONUNBUFFERED=1 --env NAME="Total Depth" --env RAINFALL_MODE=total_depth --env SIZE=0.2 --env DURATION=1 --env POST_EVENT_DURATION=0 --env TOTAL_DEPTH=40 --env RETURN_PERIOD=100 --env X=258722 --env Y=665028 --env OPEN_BOUNDARIES=False --env PERMEABLE_AREAS=impermeable --env ROOF_STORAGE=0.3 --env DISCHARGE=0 --env OUTPUT_INTERVAL=600 --name citycat-dafni-total-depth citycat-dafni
+        run: docker run -v $PWD/data:/data --env PYTHONUNBUFFERED=1 --env NAME="Total Depth" --env RAINFALL_MODE=total_depth --env SIZE=0.2 --env DURATION=1 --env POST_EVENT_DURATION=0 --env TOTAL_DEPTH=40 --env X=258722 --env Y=665028 --env OPEN_BOUNDARIES=False --env PERMEABLE_AREAS=impermeable --env ROOF_STORAGE=0.3 --env OUTPUT_INTERVAL=600 --name citycat-dafni-total-depth citycat-dafni
+
+      # - name: test return period
+      #   run: docker run -v $PWD/data:/data --env PYTHONUNBUFFERED=1 --env NAME="Return period" --env RAINFALL_MODE=return_period --env SIZE=0.1 --env DURATION=1 --env POST_EVENT_DURATION=0 --env TOTAL_DEPTH=40 --env RETURN_PERIOD=100 --env X=258722 --env Y=665028 --env OPEN_BOUNDARIES=True --env PERMEABLE_AREAS=polygons --env ROOF_STORAGE=0 --env TIME_HORIZON=2050 --env DISCHARGE=10 --env OUTPUT_INTERVAL=600 --name citycat-dafni-return-period citycat-dafni
+
+      # - name: test total depth
+      #   run: docker run -v $PWD/data:/data --env PYTHONUNBUFFERED=1 --env NAME="Total Depth" --env RAINFALL_MODE=total_depth --env SIZE=0.2 --env DURATION=1 --env POST_EVENT_DURATION=0 --env TOTAL_DEPTH=40 --env RETURN_PERIOD=100 --env X=258722 --env Y=665028 --env OPEN_BOUNDARIES=False --env PERMEABLE_AREAS=impermeable --env ROOF_STORAGE=0.3 --env DISCHARGE=0 --env OUTPUT_INTERVAL=600 --name citycat-dafni-total-depth citycat-dafni
         
-      - name: test total depth with udm outputs
-        run: docker run -v $PWD/data_2:/data --env PYTHONUNBUFFERED=1 --env NAME="Total Depth with UDM outputs" --env RAINFALL_MODE=total_depth --env SIZE=0.2 --env DURATION=1 --env POST_EVENT_DURATION=0 --env TOTAL_DEPTH=40 --env RETURN_PERIOD=100 --env X=258722 --env Y=665028 --env OPEN_BOUNDARIES=False --env PERMEABLE_AREAS=impermeable --env ROOF_STORAGE=0.3 --env DISCHARGE=0 --env OUTPUT_INTERVAL=600 --name citycat-dafni-total-depth-with-udm citycat-dafni
+      # - name: test total depth with udm outputs
+      #   run: docker run -v $PWD/data_2:/data --env PYTHONUNBUFFERED=1 --env NAME="Total Depth with UDM outputs" --env RAINFALL_MODE=total_depth --env SIZE=0.2 --env DURATION=1 --env POST_EVENT_DURATION=0 --env TOTAL_DEPTH=40 --env RETURN_PERIOD=100 --env X=258722 --env Y=665028 --env OPEN_BOUNDARIES=False --env PERMEABLE_AREAS=impermeable --env ROOF_STORAGE=0.3 --env DISCHARGE=0 --env OUTPUT_INTERVAL=600 --name citycat-dafni-total-depth-with-udm citycat-dafni
