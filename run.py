@@ -77,41 +77,55 @@ if len(parameter_file) == 1 :
     name = filename[-1]
     name = name.replace('-parameters','')
     rainfall_mode = parameters.loc[3][1]
-    time_horizon = parameters.loc[4][1]
-    rainfall_total = int(parameters.loc[5][1])
-    size = float(parameters.loc[6][1])
-    duration = int(parameters.loc[7][1])
-    post_event_duration = int(parameters.loc[8][1])
-    return_period = int(parameters.loc[9][1])
-    x = int(parameters.loc[10][1])
-    y = int(parameters.loc[11][1])
-    open_boundaries = parameters.loc[12][1]
+    rainfall_total = int(parameters.loc[4][1])
+    duration = int(parameters.loc[5][1])
+    open_boundaries = parameters.loc[6][1]
     if open_boundaries.lower()=='true':
         open_boundaries=True
     else :
         open_boundaries=False
-    permeable_areas = parameters.loc[13][1]
-    roof_storage = float(parameters.loc[14][1])
-    discharge_parameter = float(parameters.loc[15][1])
-    output_interval = int(parameters.loc[16][1])
+    permeable_areas = parameters.loc[7][1]
+    roof_storage = float(parameters.loc[8][1])
+    post_event_duration = int(parameters.loc[9][1])
+    output_interval = int(parameters.loc[10][1])
+    size = parameters.loc[11][1]
+    if size != None:
+        size = float(size)
+    x = parameters.loc[12][1]
+    y = parameters.loc[13][1]
+    if x != None:
+         x = int(x)
+    if y != None:
+        y = int(y)
+
+    # discharge_parameter = float(parameters.loc[15][1])
+    #time_horizon = parameters.loc[X][1]
+    #return_period = int(parameters.loc[X][1])
 
 # If no parameter file is available, the user needs to define the parameters
 if len(parameter_file) == 0 :
     name = os.getenv('NAME')
     rainfall_mode = os.getenv('RAINFALL_MODE')
-    time_horizon = os.getenv('TIME_HORIZON')
     rainfall_total = int(os.getenv('TOTAL_DEPTH'))
-    size = float(os.getenv('SIZE')) * 1000  # convert from km to m
     duration = int(os.getenv('DURATION'))
-    post_event_duration = int(os.getenv('POST_EVENT_DURATION'))
-    return_period = int(os.getenv('RETURN_PERIOD'))
-    x = int(os.getenv('X'))
-    y = int(os.getenv('Y'))
     open_boundaries = (os.getenv('OPEN_BOUNDARIES').lower() == 'true')
     permeable_areas = os.getenv('PERMEABLE_AREAS')
     roof_storage = float(os.getenv('ROOF_STORAGE'))
-    discharge_parameter = float(os.getenv('DISCHARGE'))
+    post_event_duration = int(os.getenv('POST_EVENT_DURATION'))
     output_interval = int(os.getenv('OUTPUT_INTERVAL'))
+    size = os.getenv('SIZE') 
+    x = os.getenv('X')
+    y = os.getenv('Y')
+    if size != None:
+        size = float(size)*1000
+    if x != None:
+        x = int(x)
+    if y != None:
+        y = int(y)
+    
+    #time_horizon = os.getenv('TIME_HORIZON')
+    #return_period = int(os.getenv('RETURN_PERIOD'))
+    #discharge_parameter = float(os.getenv('DISCHARGE'))
 
 nodata = -9999
 
