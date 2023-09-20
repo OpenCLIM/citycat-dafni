@@ -89,13 +89,13 @@ if len(parameter_file) == 1 :
     post_event_duration = int(parameters.loc[9][1])
     output_interval = int(parameters.loc[10][1])
     size = parameters.loc[11][1]
-    if size != None:
+    if size != "None":
         size = float(size)
     x = parameters.loc[12][1]
     y = parameters.loc[13][1]
-    if x != None:
+    if x != "None":
          x = int(x)
-    if y != None:
+    if y != "None":
         y = int(y)
 
     # discharge_parameter = float(parameters.loc[15][1])
@@ -116,11 +116,11 @@ if len(parameter_file) == 0 :
     size = os.getenv('SIZE') 
     x = os.getenv('X')
     y = os.getenv('Y')
-    if size != None:
+    if size != "None":
         size = float(size)*1000
-    if x != None:
+    if x != "None":
         x = int(x)
-    if y != None:
+    if y != "None":
         y = int(y)
     
     #time_horizon = os.getenv('TIME_HORIZON')
