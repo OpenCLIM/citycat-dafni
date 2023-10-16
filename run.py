@@ -116,11 +116,11 @@ if len(parameter_file) == 0 :
     size = os.getenv('SIZE') 
     x = os.getenv('X')
     y = os.getenv('Y')
-    if size != "None":
+    if size != None:
         size = float(size)*1000
-    if x != "None":
+    if x != None:
         x = int(x)
-    if y != "None":
+    if y != None:
         y = int(y)
     
     #time_horizon = os.getenv('TIME_HORIZON')
