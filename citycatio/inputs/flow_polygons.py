@@ -9,10 +9,10 @@ class FlowPolygons:
     Args:
         data: Table containing flow polygons
     """
-    def __init__(self, data: gpd.GeoSeries):
-        assert type(data) == gpd.GeoSeries
+    def __init__(self, data: gpd.GeoDataFrame):
+        assert type(data) == gpd.GeoDataFrame
         self.data = data
 
     def write(self, path):
         with open(os.path.join(path, 'BCs_flow.txt'), 'w') as f:
-            f.write(geoseries_to_string(self.data))
+            f.write(geoseries_to_string(self.data.geometry))

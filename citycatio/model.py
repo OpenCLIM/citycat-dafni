@@ -46,7 +46,7 @@ class Model:
             reservoir: Optional[gpd.GeoDataFrame] = None,
             open_boundaries: Optional[gpd.GeoDataFrame] = None,
             flow: Optional[pd.Series] = None,
-            flow_polygons: Optional[gpd.GeoSeries] = None,
+            flow_polygons: Optional[gpd.GeoDataFrame] = None,
             infiltration_parameters: Optional[gpd.GeoDataFrame] = None,
             **kwargs
     ):

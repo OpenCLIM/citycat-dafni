@@ -220,6 +220,7 @@ logger.info('Reading and clipping DEM')
 dem_path = os.path.join(inputs_path, 'dem')
 dem_datasets = [rio.open(os.path.join(dem_path, os.path.abspath(p))) for p in glob(os.path.join(dem_path, '*.asc'))]
 
+print('dem_datasets:', dem_datasets)
 array, transform = merge(dem_datasets, bounds=bounds, precision=50, nodata=nodata)
 assert array[array != nodata].size > 0, "No DEM data available for selected location"
 
@@ -250,8 +251,9 @@ else:
 #read green-areas gemetry
 logger.info('Reading green areas')
 green_areas = read_geometries('green_areas', bbox=bounds)
-if("Value" in green_areas.columns):
-    assert infiltration_file, 'if spatial green areas exist, an infiltration.csv file must be provided'
+if green_areas is not None:
+    if("Value" in green_areas.columns):
+        assert infiltration_file, 'if spatial green areas exist, an infiltration.csv file must be provided'
 
 
 # Read friction coeffs
@@ -299,7 +301,8 @@ if discharge_parameter != None:
         # Divide by the length of each cell
         discharge = discharge.divide(5)
 
-        flow_polygons = gpd.read_file(glob(os.path.join(inputs_path, 'flow_polygons', '*'))[0]).geometry
+#        flow_polygons = gpd.read_file(glob(os.path.join(inputs_path, 'flow_polygons', '*'))[0]).geometry
+        flow_polygons = read_geometries('flow_polygons', bbox=bounds)
     else:
         discharge = None
         flow_polygons = None

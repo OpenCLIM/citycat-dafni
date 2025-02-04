@@ -21,4 +21,5 @@ class Flow:
             f.write('* * *\n')
             f.write('{}\n'.format(len(self.data)))
             f.write('* * *\n')
-            self.data.to_csv(f, sep=' ', header=False, line_terminator='\n')
+            self.data.to_csv(f, sep=' ', header=False, lineterminator='\n')
+            #self.data.to_csv(f, sep=' ', header=False)
