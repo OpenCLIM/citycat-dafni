@@ -88,12 +88,16 @@ if len(parameter_file) != 0 :
         projection_row = all_parameters[all_parameters['PARAMETER']=='PROJECTION']
         projection=projection_row['VALUE'].values[0]
         print('projection:',projection)       
+    if 'DTM_SIZE' in all_parameters.values:
+        dtm_size_row = all_parameters[all_parameters['PARAMETER']=='DTM_SIZE']
+        dtm_size=dtm_size_row['VALUE'].values[0]
+        print('dtm_size:',dtm_size)       
 else:
     # rainfall_total = os.getenv('TOTAL_DEPTH')
     # duration = os.getenv('DURATION')
     permeable_areas = os.getenv('PERMEABLE_AREAS')
     projection = os.getenv('PROJECTION')
-
+    dtm_size = os.getenv('DTM_SIZE')
 
 # Read all the additional parameter sets:
 # move DURATION and TOTAL_DEPTH to tbelow from sotrm profile
@@ -277,12 +281,12 @@ if rainfall_polygons is not None:
     if len(rainfall_depth) == 1 :
         spatial_depths = np.loadtxt(rainfall_depth[0],skiprows=1)
         rain_array = np.zeros(shape=(len(unit_profile)+2,len(spatial_depths)))
-        for x in range(len(unit_profile)):
-            for y in range(len(spatial_depths)):
-                rain_array[x,y]=unit_profile[x]*spatial_depths[y]
-        for y in range(len(spatial_depths)):
-            rain_array[x+1,y]=0.0
-            rain_array[x+2,y]=0.0
+        for x1 in range(len(unit_profile)):
+            for y1 in range(len(spatial_depths)):
+                rain_array[x1,y1]=unit_profile[x1]*spatial_depths[y1]
+        for y1 in range(len(spatial_depths)):
+            rain_array[x1+1,y1]=0.0
+            rain_array[x1+2,y1]=0.0
         rainfall = pd.DataFrame(list(rain_array/unit_total/1000),
                         index=list(rainfall_times) + [duration*3600+1, duration*3600+2] )
 
@@ -299,7 +303,13 @@ if discharge_parameter != None:
         discharge = pd.Series([discharge_parameter, discharge_parameter], index=[0, total_duration])
 
         # Divide by the length of each cell
-        discharge = discharge.divide(5)
+        if dtm_size >0:
+            discharge = discharge.divide(dtm_size)
+            print('actual discharge per m = input discharge divided by cell size:',discharge[0])
+        else:
+            discharge = discharge.divide(5)
+            print('actual discharge per m = input discharge divided by cell size:',discharge[0])
+            print('cell size not defined set to 5 meters')
 
 #        flow_polygons = gpd.read_file(glob(os.path.join(inputs_path, 'flow_polygons', '*'))[0]).geometry
         flow_polygons = read_geometries('flow_polygons', bbox=bounds)

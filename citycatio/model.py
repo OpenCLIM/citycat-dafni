@@ -77,7 +77,8 @@ class Model:
         self.flow = inputs.Flow(flow) if flow is not None else None
         self.flow_polygons = inputs.FlowPolygons(flow_polygons) if flow_polygons is not None else None
         if self.flow is not None:
-            assert self.flow_polygons is not None, 'Flow series provided without polygons'
+            #assert self.flow_polygons is not None, 'Flow series provided without polygons'
+            print('Flow series provided without polygons')
 
     def write(self, path: str):
         """Creates all input files in the directory given by path
@@ -105,4 +106,5 @@ class Model:
             self.open_boundaries.write(path)
         if self.flow is not None:
             self.flow.write(path)
+        if self.flow_polygons is not None:
             self.flow_polygons.write(path)
