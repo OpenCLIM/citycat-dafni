@@ -1,7 +1,7 @@
 kind: M
 api_version: v1beta3
 metadata:
-  display_name: Urban_Flooding:CityCAT extra functionality v3
+  display_name: Urban_Flooding:CityCAT extra functionality v5
   contact_point_name: Steve Birkinshaw
   contact_point_email: s.j.birkinshaw@newcastle.ac.uk
   name: global-citycat-openclim
@@ -310,7 +310,12 @@ spec:
         description:
           All parameters and their values are stored in a csv file.
 
-      - name: outputs/udm_parameters/*
+      - name: outputs/boundary/*
         type: folder
         description:
-          A series of csv files outlinning the parameters and values used by the Urban Development Workflow to generate the dataset.
+          Boundary file copied over to output
+
+      - name: outputs/metadata/*
+        type: folder
+        description:
+          metedata file with information about the run

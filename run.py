@@ -24,6 +24,8 @@ from zipfile import ZipFile
 import matplotlib as mpl
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 from matplotlib.colors import ListedColormap
+from geojson import Polygon
+
 
 import random
 import string
@@ -40,11 +42,13 @@ from os.path import isfile, join, isdir
     
 parameters_path = os.path.join(inputs_path, 'parameters')
 print('parameters_path:',parameters_path)
-udm_para_in_path = os.path.join(inputs_path, 'udm_parameters')
 
 outputs_parameters_data = os.path.join(data_path, 'outputs', 'parameters')
 if not os.path.exists(outputs_parameters_data):
     os.mkdir(outputs_parameters_data)
+meta_outputs_path = os.path.join(outputs_path, 'metadata')
+if not os.path.exists(meta_outputs_path):
+    os.mkdir(meta_outputs_path)
 
 # Set up log file
 logger = logging.getLogger('citycat-dafni')
@@ -92,12 +96,17 @@ if len(parameter_file) != 0 :
         dtm_size_row = all_parameters[all_parameters['PARAMETER']=='DTM_SIZE']
         dtm_size=dtm_size_row['VALUE'].values[0]
         print('dtm_size:',dtm_size)       
+    if 'LOCATION' in all_parameters.values:
+        location_row = all_parameters[all_parameters['PARAMETER']=='LOCATION']
+        location=location_row['VALUE'].values[0]
+        print('location:',location)       
 else:
     # rainfall_total = os.getenv('TOTAL_DEPTH')
     # duration = os.getenv('DURATION')
     permeable_areas = os.getenv('PERMEABLE_AREAS')
     projection = os.getenv('PROJECTION')
     dtm_size = os.getenv('DTM_SIZE')
+    location = 'unknown'
 
 # Read all the additional parameter sets:
 # move DURATION and TOTAL_DEPTH to tbelow from sotrm profile
@@ -128,6 +137,55 @@ if discharge_parameter != None:
 if discharge_parameter == None:
     discharge_parameter = float(0)
 nodata = -9999
+
+def metadata_json(output_path, output_title, output_description, bbox, file_name):
+    """
+    Generate a metadata json file used to catalogue the outputs of the  model on DAFNI
+    """
+
+    # Create metadata file
+    metadata = f"""{{
+      "@context": ["metadata-v1"],
+      "@type": "dcat:Dataset",
+      "dct:language": "en",
+      "dct:title": "{output_title}",
+      "dct:description": "{output_description}",
+      "dcat:keyword": [
+        "UDM"
+      ],
+      "dct:subject": "Environment",
+      "dct:license": {{
+        "@type": "LicenseDocument",
+        "@id": "https://creativecommons.org/licences/by/4.0/",
+        "rdfs:label": null
+      }},
+      "dct:creator": [{{"@type": "foaf:Organization"}}],
+      "dcat:contactPoint": {{
+        "@type": "vcard:Organization",
+        "vcard:fn": "DAFNI",
+        "vcard:hasEmail": "support@dafni.ac.uk"
+      }},
+      "dct:created": "{datetime.now().isoformat()}Z",
+      "dct:PeriodOfTime": {{
+        "type": "dct:PeriodOfTime",
+        "time:hasBeginning": null,
+        "time:hasEnd": null
+      }},
+      "dafni_version_note": "created",
+      "dct:spatial": {{
+        "@type": "dct:Location",
+        "rdfs:label": null
+      }},
+      "geojson": {bbox}
+    }}
+    """
+
+    # write to file
+    with open(join(output_path, '%s.json' % file_name), 'w') as f:
+        f.write(metadata)
+    return
+
+
 
 def read_geometries(path, bbox=None):
     logger.info('---- In read geometries function')
@@ -163,6 +221,10 @@ if boundary is None:
     bounds = x-size/2, y-size/2, x+size/2, y+size/2
 else:
     bounds = boundary.geometry.total_bounds.tolist()
+#geojson = Polygon([[(left,top), (right,top), (right,bottom), (left,bottom)]])
+geojson = Polygon(bounds)
+
+
 
 logger.info('Checking if rainfall period being used')
 if rainfall_mode == 'return_period':
@@ -224,7 +286,6 @@ logger.info('Reading and clipping DEM')
 dem_path = os.path.join(inputs_path, 'dem')
 dem_datasets = [rio.open(os.path.join(dem_path, os.path.abspath(p))) for p in glob(os.path.join(dem_path, '*.asc'))]
 
-print('dem_datasets:', dem_datasets)
 array, transform = merge(dem_datasets, bounds=bounds, precision=50, nodata=nodata)
 assert array[array != nodata].size > 0, "No DEM data available for selected location"
 
@@ -554,43 +615,17 @@ if discharge is not None:
     description += f' A flow of {discharge_parameter} cumecs was used as a boundary condition.'
     title += f' {discharge_parameter}m3/s'
 
-udm_para_out_path = os.path.join(outputs_path, 'udm_parameters')
-if not os.path.exists(udm_para_out_path):
-    os.mkdir(udm_para_out_path)
 
 print('Stage 9')
 
-meta_data_txt = glob(udm_para_in_path + "/**/metadata.txt", recursive = True)
-meta_data_csv = glob(udm_para_in_path + "/**/metadata.csv", recursive = True)
-attractors = glob(udm_para_in_path + "/**/attractors.csv", recursive = True)
-constraints = glob(udm_para_in_path + "/**/constraints.csv", recursive = True)
-
-if len(meta_data_txt)==1:
-    src = meta_data_txt[0]
-    dst = os.path.join(udm_para_out_path,'metadata.txt')
-    shutil.copy(src,dst)
-
-if len(meta_data_csv)==1:
-    src = meta_data_csv[0]
-    dst = os.path.join(udm_para_out_path,'metadata.csv')
-    shutil.copy(src,dst)
-
-if len(attractors)==1:
-    src = attractors[0]
-    dst = os.path.join(udm_para_out_path,'attractors.csv')
-    shutil.copy(src,dst)
-
-if len(constraints)==1:
-    src = constraints[0]
-    dst = os.path.join(udm_para_out_path,'constraints.csv')
-    shutil.copy(src,dst)
-
-#seems to be code assocaited with UDM model. comment it out for the moment
-#geojson = json.dumps({
-#    'type': 'Feature',
-#    'properties': {},
-#    'geometry': gpd.GeoSeries(box(*bounds), crs='EPSG:27700').to_crs(epsg=4326).iloc[0].__geo_interface__})
-print(title)
+# Create metadata file
+logger.info('Building metadata file for DAFNI')
+title_for_output_citycat = location + ' - ' + str(rainfall_total) + 'mm - ' + str(duration) + 'hr CityCAT results'
+title_for_output_impact = location + ' - '  + str(rainfall_total) + 'mm - ' + str(duration) + ' flood impact results'
+description_for_output_citycat = 'Outputs from the CityCAT model for ' + location + '- rainfall_total ' + str(rainfall_total) + 'mm - ' + 'duration ' + str(duration) + ' hours'
+description_for_output_impact = 'Flood impact data generated by the CityCat flooding model for ' + location + '- rainfall_total ' + str(rainfall_total) + 'mm - ' + 'duration ' + str(duration) + ' hours'
+metadata_json(output_path=meta_outputs_path, output_title=title_for_output_citycat, output_description=description_for_output_citycat, bbox=geojson, file_name='metadata_citycat')
+metadata_json(output_path=meta_outputs_path, output_title=title_for_output_impact, output_description=description_for_output_impact, bbox=geojson, file_name='metadata_impact')
 
 print('Stage 10')
 
@@ -641,12 +676,12 @@ boundary_output_path = os.path.join(outputs_path,'boundary')
 if not os.path.exists(boundary_output_path):
     os.mkdir(boundary_output_path)
 
-fi_input_path = os.path.join(inputs_path,'flood_impact')
-fi_file = glob(fi_input_path + "/*.gpkg", recursive = True)
-print('fi_file:',fi_file)
-fi_output_path = os.path.join(outputs_path,'flood_impact')
-if not os.path.exists(fi_output_path):
-    os.mkdir(fi_output_path)
+# fi_input_path = os.path.join(inputs_path,'flood_impact')
+# fi_file = glob(fi_input_path + "/*.gpkg", recursive = True)
+# print('fi_file:',fi_file)
+# fi_output_path = os.path.join(outputs_path,'flood_impact')
+# if not os.path.exists(fi_output_path):
+#     os.mkdir(fi_output_path)
 
 # Move the boundary file to the outputs folder
 if len(boundary_file) != 0 :
@@ -663,54 +698,18 @@ if len(boundary_file) != 0 :
         shutil.copy(src,dst)
 
 # Move the impact files to the outputs folder
-if len(fi_file) != 0 :
-    for i in range (0, len(fi_file)):
-        file_path = os.path.splitext(fi_file[i])
-        #filename=file_path[0].split("/")
-        if os.name=='nt':
-            filename=file_path[0].split("\\")
-        else:
-            filename=file_path[0].split("/")
+# if len(fi_file) != 0 :
+#     for i in range (0, len(fi_file)):
+#         file_path = os.path.splitext(fi_file[i])
+#         #filename=file_path[0].split("/")
+#         if os.name=='nt':
+#             filename=file_path[0].split("\\")
+#         else:
+#             filename=file_path[0].split("/")
     
-        src = fi_file[i]
-        dst = os.path.join(fi_output_path,filename[-1] + '.gpkg')
-        shutil.copy(src,dst)
+#         src = fi_file[i]
+#         dst = os.path.join(fi_output_path,filename[-1] + '.gpkg')
+#         shutil.copy(src,dst)
 
-# Create metadata file
-logger.info('Building metadata file for DAFNI')
-metadata = f"""{{
-  "@context": ["metadata-v1"],
-  "@type": "dcat:Dataset",
-  "dct:language": "en",
-  "dct:title": "{title}",
-  "dct:description": "{description}",
-  "dcat:keyword": [
-    "citycat"
-  ],
-  "dct:subject": "Environment",
-  "dct:license": {{
-    "@type": "LicenseDocument",
-    "@id": "https://creativecommons.org/licences/by/4.0/",
-    "rdfs:label": null
-  }},
-  "dct:creator": [{{"@type": "foaf:Organization"}}],
-  "dcat:contactPoint": {{
-    "@type": "vcard:Organization",
-    "vcard:fn": "DAFNI",
-    "vcard:hasEmail": "support@dafni.ac.uk"
-  }},
-  "dct:created": "{datetime.now().isoformat()}Z",
-  "dct:PeriodOfTime": {{
-    "type": "dct:PeriodOfTime",
-    "time:hasBeginning": null,
-    "time:hasEnd": null
-  }},
-  "dafni_version_note": "created",
-  "dct:spatial": {{
-    "@type": "dct:Location",
-    "rdfs:label": null
-  }},
-}}
-"""
-with open(os.path.join(run_path, 'metadata.json'), 'w') as f:
-    f.write(metadata)
+
+
